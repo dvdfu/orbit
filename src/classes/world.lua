@@ -18,7 +18,7 @@ local World = Class {
 }
 
 local function getInRange(range)
-    return math.random(range.low, range.high)
+    return RNG:random(range.low, range.high)
 end
 
 local function beginContact(a, b, coll)
@@ -66,12 +66,12 @@ function World:generate()
 
     for i = 1, 100 do
         local bit = Bit(self.physicsWorld, self.planets, 0, 0)
-        bit.body:applyLinearImpulse(math.random(8), math.random(8))
+        bit.body:applyLinearImpulse(RNG:random(8), RNG:random(8))
         table.insert(self.objects, bit)
     end
 
     for i = 1, 5 do
-        local asteroid = Asteroid(self.physicsWorld, self.planets, math.random(-self.radius, self.radius), math.random(-self.radius, self.radius), math.random(15, 30))
+        local asteroid = Asteroid(self.physicsWorld, self.planets, RNG:random(-self.radius, self.radius), RNG:random(-self.radius, self.radius), RNG:random(15, 30))
         table.insert(self.objects, asteroid)
         table.insert(self.asteroids, asteroid)
     end
@@ -115,7 +115,7 @@ function World:generatePlanets()
             self.radius = v:len() + fakePlanets[i].radius
         end
 
-        local player = Player(self.physicsWorld, planet, math.random(2 * math.pi))
+        local player = Player(self.physicsWorld, planet, RNG:random(2 * math.pi))
         table.insert(self.objects, player)
         table.insert(self.players, player)
     end
@@ -131,7 +131,7 @@ function World:update(dt)
             if(object.fixture:getUserData().tag == 'Asteroid') then
               for i = 1, 5 do
                   local bit = Bit(self.physicsWorld, self.planets, object.body:getX(), object.body:getY())
-                  bit.body:applyLinearImpulse(math.random(8), math.random(8))
+                  bit.body:applyLinearImpulse(RNG:random(8), RNG:random(8))
                   table.insert(self.objects, bit)
               end
             end
