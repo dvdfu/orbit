@@ -1,30 +1,26 @@
 local Class = require 'modules.hump.class'
 local Vector = require 'modules.hump.vector'
-local Circle = require 'src.classes.circle'
+local Body = require 'src.mixins.body'
 
 local Movable = Class {
     G = 1
 }
-Movable:include(Circle)
+Movable:include(Body)
 
 function Movable:init(world, attractors, x, y, radius)
-    Circle.init(self, x, y, radius)
+    Body.init(self, world, x, y, radius, true)
     self.attractors = attractors
-
-    -- setup physics
-    local shape = love.physics.newCircleShape(radius)
-    self.body = love.physics.newBody(world, x, y, 'dynamic')
-    self.fixture = love.physics.newFixture(self.body, shape, 1)
 end
 
 function Movable:update(dt)
+    -- apply force per attractor
     for _, attractor in pairs(self.attractors) do
         local direction = (attractor.pos - self.pos):normalized()
         local magnitude = Movable.G * self:getArea() * attractor:getArea() / self:getSquaredLengthTo(attractor.pos)
         self.body:applyForce((direction * magnitude):unpack())
     end
 
-    self.pos = Vector(self.body:getX(), self.body:getY())
+    Body.update(self, dt)
 end
 
 return Movable
