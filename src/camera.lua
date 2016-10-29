@@ -57,8 +57,7 @@ end
 
 function Camera:draw(callback)
     local halfScreen = Vector(love.graphics.getDimensions()) / 2
-    local translation = halfScreen - self.pos
-    translation = translation + self.shakeVec
+    local translation = halfScreen / self.zoom - self.pos + self.shakeVec
 
     love.graphics.push()
     love.graphics.scale(self.zoom)

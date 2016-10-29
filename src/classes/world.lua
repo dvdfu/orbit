@@ -125,13 +125,25 @@ function World:update(dt)
         end
     end
 
+    self:handleCamera()
+end
+
+function World:handleCamera()
     local cameraVec = Vector()
+    local playerDist = 0
     for _, player in pairs(self.players) do
         cameraVec = cameraVec + player.pos
+        if player.pos:len() > playerDist then
+            -- gets the farthest player distance
+            playerDist = player.pos:len()
+        end
     end
-    cameraVec = cameraVec / #self.players
 
+    cameraVec = cameraVec / #self.players
     self.camera:follow(cameraVec)
+
+    local zoom = math.min(1, 400 / (50 + playerDist))
+    self.camera:zoomTo(zoom)
     self.camera:update(dt)
 end
 
