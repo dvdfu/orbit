@@ -43,26 +43,26 @@ function World:init()
     self.physicsWorld = love.physics.newWorld(0, 0, true)
     self.physicsWorld:setCallbacks(beginContact, endContact, preSolve, postSolve)
 
+    self.fakePlanets = {}
     self.planets = {}
     self.players = {}
     self.objects = {}
     self.asteroids = {}
 
+    self:generate()
+
     local player = Player(self.physicsWorld, self.planets, 200, 20)
     table.insert(self.objects, player)
     table.insert(self.players, player)
 
+    -- player = Player(self.physicsWorld, self.planets, -200, 20)
+    -- table.insert(self.objects, player)
+    -- table.insert(self.players, player)
     self.camera = Camera(20)
-
-    self:generate()
 end
 
 function World:generate()
-    for i = 1, 4 do
-        local planet = Planet(self.physicsWorld, math.random(-World.RADIUS, World.RADIUS), math.random(-World.RADIUS, World.RADIUS), math.random(50, 100))
-        table.insert(self.planets, planet)
-        table.insert(self.objects, planet)
-    end
+    self:generatePlanets()
 
     for i = 1, 100 do
         local bit = Bit(self.physicsWorld, self.planets, 0, 0)
@@ -74,6 +74,36 @@ function World:generate()
         local asteroid = Asteroid(self.physicsWorld, self.planets, math.random(-World.RADIUS, World.RADIUS), math.random(-World.RADIUS, World.RADIUS), math.random(15, 30))
         table.insert(self.objects, asteroid)
         table.insert(self.asteroids, asteroid)
+    end
+end
+
+function World:generatePlanets()
+    local genWorld = love.physics.newWorld(0, 0, true)
+    genWorld:setCallbacks(beginContact, endContact, preSolve, postSolve)
+
+    local numberOfPlanets = 59
+
+    for i = 1, numberOfPlanets do
+        local planet = Body(genWorld, math.random(-10, 10), math.random(-10, 10), math.random(100, 200), true)
+        table.insert(self.fakePlanets, planet)
+    end
+
+    local stillResolving = true
+    while stillResolving do
+        genWorld:update(1)
+
+        for _, v in pairs(self.fakePlanets) do
+            stillResolving = false
+            if v.body:isAwake() then
+                stillResolving = true
+            end
+        end
+    end
+
+    for i = 1, numberOfPlanets do
+        local planet = Planet(self.physicsWorld, self.fakePlanets[i].body:getX(), self.fakePlanets[i].body:getY(), self.fakePlanets[i].radius / 2, false)
+        table.insert(self.planets, planet)
+        table.insert(self.objects, planet)
     end
 end
 
