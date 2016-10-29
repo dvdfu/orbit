@@ -3,10 +3,11 @@ local Signal  = require 'modules.hump.signal'
 local Vector  = require 'modules.hump.vector'
 local Body    = require 'src.mixins.body'
 local Movable = require 'src.mixins.movable'
+local Weapon = require 'src.classes.weapon'
 
 local Player = Class {
     RADIUS = 12,
-    MOVE_FORCE = 400,
+    MOVE_FORCE = 400
 }
 Player:include(Body)
 
@@ -15,6 +16,7 @@ function Player:init(id, world, level, planet, angle)
     Body.init(self, world, x, y, Player.RADIUS, true)
 
     self.id = id
+    self.weapon = Weapon(level, self, Const.weapons.pistol)
     self.level = level
     self.planet = planet
     self.points = 0
@@ -55,11 +57,9 @@ function Player:update(dt)
     local rsy = self.joystick:getGamepadAxis('righty')
     self.direction = math.atan2(rsy, rsx)
 
+    self.weapon:update(dt)
     if self.joystick:isGamepadDown('rightshoulder') then
-        if self.points > 0 then
-            self.points = self.points - 1
-            self.level:shoot(self)
-        end
+        self.weapon:shoot()
     end
 
     Body.update(self, dt)
