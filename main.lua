@@ -1,3 +1,5 @@
+local Planet = require 'src.classes.planet'
+
 function love.load()
 end
 
