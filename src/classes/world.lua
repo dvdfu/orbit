@@ -6,6 +6,7 @@ local Bit    = require 'src.classes.bit'
 local Planet = require 'src.classes.planet'
 local Player = require 'src.classes.player'
 local Body   = require 'src.mixins.body'
+local Asteroid = require 'src.classes.asteroid'
 
 local World = Class {
     RADIUS = 300
@@ -45,6 +46,7 @@ function World:init()
     self.planets = {}
     self.players = {}
     self.objects = {}
+    self.asteroids = {}
 
     local player = Player(self.physicsWorld, self.planets, 200, 20)
     table.insert(self.objects, player)
@@ -67,6 +69,12 @@ function World:generate()
         bit.body:applyLinearImpulse(math.random(8), math.random(8))
         table.insert(self.objects, bit)
     end
+
+    for i = 1, 5 do
+        local asteroid = Asteroid(self.physicsWorld, self.planets, math.random(-World.RADIUS, World.RADIUS), math.random(-World.RADIUS, World.RADIUS), math.random(15, 30))
+        table.insert(self.objects, asteroid)
+        table.insert(self.asteroids, asteroid)
+    end
 end
 
 function World:update(dt)
@@ -74,6 +82,13 @@ function World:update(dt)
 
     for key, object in pairs(self.objects) do
         if object:isDead() then
+            if(object.fixture:getUserData().tag == 'Asteroid') then
+              for i = 1, 5 do
+                  local bit = Bit(self.physicsWorld, self.planets, object.body:getX(), object.body:getY())
+                  bit.body:applyLinearImpulse(math.random(8), math.random(8))
+                  table.insert(self.objects, bit)
+              end
+            end
             object.body:destroy()
             table.remove(self.objects, key)
         else
