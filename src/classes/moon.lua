@@ -23,12 +23,14 @@ function Moon:init(world, planet, x, y, radius)
 end
 
 function Moon:update(dt)
+  Body.update(self, dt)
   self.angle = self.angle + dt/2;
   if self.angle >= 2*math.pi then
     self.angle = 0;
   end
-  self.pos.x = (self.radius+self.planet.radius + 50)*math.cos(self.angle) + self.planet.pos.x
-  self.pos.y = (self.radius+self.planet.radius + 30)*math.sin(self.angle) + self.planet.pos.y
+  self.body:setPosition(
+      (self.radius+self.planet.radius + 50)*math.cos(self.angle) + self.planet.pos.x
+    , (self.radius+self.planet.radius + 30)*math.sin(self.angle) + self.planet.pos.y)
 end
 
 function Moon:draw()
