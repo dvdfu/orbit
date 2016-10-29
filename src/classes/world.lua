@@ -50,10 +50,6 @@ function World:init()
     table.insert(self.objects, player)
     table.insert(self.players, player)
 
-    player = Player(self.physicsWorld, self.planets, -200, 20)
-    table.insert(self.objects, player)
-    table.insert(self.players, player)
-
     self.camera = Camera(20)
 
     self:generate()

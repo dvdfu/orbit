@@ -5,8 +5,7 @@ local Movable = require 'src.mixins.movable'
 
 local Player = Class {
     density = 1,
-    jumpForce = 400,
-    moveForce = 20
+    thrust = 20,
 }
 Player:include(Movable)
 
@@ -15,6 +14,7 @@ function Player:init(world, planets, x, y)
 
     self.ground = nil
     self.points = 0
+    self.direction = 0
 
     self.body:setLinearDamping(0.5)
     self.body:setAngularDamping(0.5)
@@ -43,26 +43,23 @@ end
 function Player:update(dt)
     Movable.update(self, dt)
 
-    if Keyboard.isDown('up') and self.ground then
-        local d = (self.pos - self.ground.pos):normalized() * Player.jumpForce
-
-        self.body:applyLinearImpulse(d:unpack())
-        self.ground = nil
+    if Keyboard.isDown('up') then
+        local vec = Player.thrust * Vector(1, 0):rotated(self.direction)
+        self.body:applyLinearImpulse(vec:unpack())
     end
 
-    if Keyboard.isDown('left') and self.ground then
-        local d = -(self.pos - self.ground.pos):normalized():perpendicular() * Player.moveForce
-        self.body:applyLinearImpulse(d:unpack())
+    if Keyboard.isDown('left') then
+        self.direction = self.direction - 4 * math.pi / 180
     end
 
-    if Keyboard.isDown('right') and self.ground then
-        local d = (self.pos - self.ground.pos):normalized():perpendicular() * Player.moveForce
-        self.body:applyLinearImpulse(d:unpack())
+    if Keyboard.isDown('right') then
+        self.direction = self.direction + 4 * math.pi / 180
     end
 end
 
 function Player:draw()
     love.graphics.print(self.points, self.pos.x - 4, self.pos.y - 4)
+    love.graphics.circle('fill', self.pos.x + 16 * math.cos(self.direction), self.pos.y + 16 * math.sin(self.direction), 4)
     Movable.draw(self)
 end
 
