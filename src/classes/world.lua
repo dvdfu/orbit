@@ -10,7 +10,7 @@ local Asteroid = require 'src.classes.asteroid'
 
 local World = Class {
     RADIUS = 300,
-    NUM_PLANETS = 4
+    NUM_PLANETS = 2
 }
 
 local function beginContact(a, b, coll)
@@ -44,18 +44,13 @@ function World:init()
     self.physicsWorld = love.physics.newWorld(0, 0, true)
     self.physicsWorld:setCallbacks(beginContact, endContact, preSolve, postSolve)
 
+    self.camera = Camera(8)
     self.planets = {}
     self.players = {}
     self.objects = {}
     self.asteroids = {}
 
     self:generate()
-
-    local player = Player(self.physicsWorld, self.planets, 200, 20)
-    table.insert(self.objects, player)
-    table.insert(self.players, player)
-
-    self.camera = Camera(8)
 end
 
 function World:generate()
@@ -101,6 +96,10 @@ function World:generatePlanets()
         local planet = Planet(self.physicsWorld, fakePlanets[i].body:getX(), fakePlanets[i].body:getY(), fakePlanets[i].radius / 2, false)
         table.insert(self.planets, planet)
         table.insert(self.objects, planet)
+
+        local player = Player(self.physicsWorld, planet, math.random(2 * math.pi))
+        table.insert(self.objects, player)
+        table.insert(self.players, player)
     end
 
     genWorld:destroy()

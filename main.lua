@@ -1,3 +1,4 @@
+Joysticks = require 'src.joysticks'
 Keyboard = require 'src.keyboard'
 
 local World = require 'src.classes.world'
@@ -5,6 +6,7 @@ local World = require 'src.classes.world'
 local world
 
 function love.load()
+    Joysticks.init()
     world = World()
 end
 
