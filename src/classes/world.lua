@@ -1,9 +1,10 @@
-local Class = require 'modules.hump.class'
+local Class  = require 'modules.hump.class'
+local Signal = require 'modules.hump.signal'
 local Camera = require 'src.camera'
-local Bit = require 'src.classes.bit'
+local Bit    = require 'src.classes.bit'
 local Planet = require 'src.classes.planet'
 local Player = require 'src.classes.player'
-local Body = require 'src.mixins.body'
+local Body   = require 'src.mixins.body'
 
 local World = Class {
     RADIUS = 320
@@ -33,15 +34,24 @@ local function preSolve(a, b, coll) end
 local function postSolve(a, b, coll, normal, tangent) end
 
 function World:init()
+    Signal.register('cam_shake', function(shake)
+        self.camera:shake(shake)
+    end)
+
     self.physicsWorld = love.physics.newWorld(0, 0, true)
     self.physicsWorld:setCallbacks(beginContact, endContact, preSolve, postSolve)
 
     self.planets = {}
     self.bits = {}
-    self.player = Player(self.physicsWorld, self.planets, 400, 400)
+    self.players = {}
+    local player = Player(self.physicsWorld, self.planets, 200, 20)
+    table.insert(self.players, player)
+
+    player = Player(self.physicsWorld, self.planets, -200, 20)
+    table.insert(self.players, player)
 
     self.camera = Camera(20)
-    self.camera:follow(self.player)
+    self.camera:follow(player)
 
     self:generate()
 end
@@ -61,10 +71,13 @@ end
 
 function World:update(dt)
     self.physicsWorld:update(dt)
-    self.player:update(dt)
 
     for _, bit in pairs(self.bits) do
         bit:update(dt)
+    end
+
+    for _, player in pairs(self.players) do
+        player:update(dt)
     end
 
     self.camera:update(dt)
@@ -73,7 +86,10 @@ end
 function World:draw()
     self.camera:draw(function()
         love.graphics.circle('line', 0, 0, World.RADIUS)
-        self.player:draw()
+
+        for _, player in pairs(self.players) do
+            player:draw()
+        end
 
         for _, planet in pairs(self.planets) do
             planet:draw()

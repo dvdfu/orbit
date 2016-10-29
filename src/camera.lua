@@ -8,6 +8,7 @@ function Camera:init(damping)
     self.damping = damping or 1 -- camera movement damping
     self.target = nil
     self.pos = Vector()
+    self.zoom = 1
     self.shakeTimer = Timer.new()
     self.shakeVec = Vector()
 end
@@ -33,6 +34,10 @@ function Camera:lookAt(target)
     self.pos = target
 end
 
+function Camera:zoomTo(zoom)
+    self.zoom = zoom
+end
+
 function Camera:shake(shake, direction)
     shake = shake or 4
     direction = direction or math.random(math.pi * 2)
@@ -40,7 +45,7 @@ function Camera:shake(shake, direction)
     self.shakeVec:rotateInplace(-direction)
 
     self.shakeTimer:clear()
-    self.shakeTimer:tween(shake * 4, self.shakeVec, {
+    self.shakeTimer:tween(1, self.shakeVec, {
         x = 0,
         y = 0
     }, 'out-elastic')
@@ -57,7 +62,9 @@ function Camera:draw(callback)
 
     love.graphics.push()
     love.graphics.translate(translation:unpack())
+    love.graphics.scale(self.zoom)
     callback()
+    love.graphics.scale(1)
     love.graphics.pop()
 end
 
