@@ -9,9 +9,33 @@ Player:include(Movable)
 
 function Player:init(world, planets, x, y)
     Movable.init(self, world, planets, x, y, 16)
-    self.planets = planets
+
+    self.ground = nil
+
     self.body:setLinearDamping(0.5)
     self.body:setAngularDamping(0.5)
+    self.body:setFixedRotation(true)
+
+    self.fixture:setUserData({
+        object = self,
+        tag = 'Player',
+        collide = function(data)
+            if data.tag == 'Planet' then
+                self.ground = data.object
+            end
+        end
+    })
+end
+
+function Player:update(dt)
+    Movable.update(self, dt)
+
+    if Keyboard.isDown('up') and self.ground then
+        local d = (self.pos - self.ground.pos):normalized() * 400
+
+        self.body:applyLinearImpulse(d:unpack())
+        self.ground = nil
+    end
 end
 
 return Player
