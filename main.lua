@@ -1,3 +1,5 @@
+Keyboard = require 'src.keyboard'
+
 local Planet = require 'src.classes.planet'
 local Player = require 'src.classes.player'
 
@@ -24,6 +26,8 @@ end
 function love.update(dt)
     player:update(dt)
     world:update(dt)
+
+    Keyboard.update()
 end
 
 function love.draw()
