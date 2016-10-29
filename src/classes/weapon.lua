@@ -22,12 +22,13 @@ function Weapon:setWeaponType(type)
 end
 
 function Weapon:shoot()
-    if self.fireTimer <= 0 then
+    if self.fireTimer <= 0 and self.player.points > 0 then
         local bit = Bit(self.level.physicsWorld, self.level.planets, self.player, self.player.pos.x, self.player.pos.y)
         local ix, iy = self.bulletSpeed * math.cos(self.player.direction), self.bulletSpeed * math.sin(self.player.direction)
         bit.body:applyLinearImpulse(ix, iy)
         self.level:addObject(bit)
 
+        self.player.points = self.player.points - 1
         self.fireTimer = self.fireRate
     end
 end
