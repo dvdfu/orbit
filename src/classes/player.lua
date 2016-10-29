@@ -44,13 +44,9 @@ function Player:update(dt)
     local magnitude = Movable.G * self:getArea() * self.planet:getArea() / self:getSquaredLengthTo(self.planet.pos)
     self.body:applyForce((direction * magnitude):unpack())
 
-    local force = Player.MOVE_FORCE * direction:rotated(math.pi / 2)
-
-    local lsx = self.joystick:getGamepadAxis('leftx')
-    if lsx > 0.1 then
-        self.body:applyForce((-force):unpack())
-    elseif lsx < -0.1 then
-        self.body:applyForce(force:unpack())
+    local ls = Vector(self.joystick:getGamepadAxis('leftx'), self.joystick:getGamepadAxis('lefty'))
+    if ls:len() > 0.05 then
+        self.body:applyForce((ls:normalized() * Player.MOVE_FORCE):unpack())
     end
 
     local rsx = self.joystick:getGamepadAxis('rightx')
