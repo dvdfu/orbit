@@ -9,9 +9,17 @@ local Body   = require 'src.mixins.body'
 local Asteroid = require 'src.classes.asteroid'
 
 local World = Class {
-    RADIUS = 300,
-    NUM_PLANETS = 2
+    NUM_PLANETS = 4,
+
+    -- Generation Parameters
+    PLANET_STARTING_POSITION = { low = -10, high = 10 },
+    PLANET_RADIUS = { low = 100, high = 200 },
+    PLANET_RADIUS_SHRINK_FACTOR = 3
 }
+
+local function getInRange(range)
+    return math.random(range.low, range.high)
+end
 
 local function beginContact(a, b, coll)
     local aData = a:getUserData()
@@ -63,7 +71,7 @@ function World:generate()
     end
 
     for i = 1, 5 do
-        local asteroid = Asteroid(self.physicsWorld, self.planets, math.random(-World.RADIUS, World.RADIUS), math.random(-World.RADIUS, World.RADIUS), math.random(15, 30))
+        local asteroid = Asteroid(self.physicsWorld, self.planets, math.random(-self.radius, self.radius), math.random(-self.radius, self.radius), math.random(15, 30))
         table.insert(self.objects, asteroid)
         table.insert(self.asteroids, asteroid)
     end
@@ -75,7 +83,10 @@ function World:generatePlanets()
     genWorld:setCallbacks(beginContact, endContact, preSolve, postSolve)
 
     for i = 1, World.NUM_PLANETS do
-        local planet = Body(genWorld, math.random(-10, 10), math.random(-10, 10), math.random(100, 200), true)
+        local x = getInRange(World.PLANET_STARTING_POSITION);
+        local y = getInRange(World.PLANET_STARTING_POSITION)
+        local radius = getInRange(World.PLANET_RADIUS)
+        local planet = Body(genWorld, x, y, radius, true)
         table.insert(fakePlanets, planet)
     end
 
@@ -92,10 +103,17 @@ function World:generatePlanets()
         if allAsleep then break end
     end
 
+    self.radius = 0
     for i = 1, World.NUM_PLANETS do
-        local planet = Planet(self.physicsWorld, fakePlanets[i].body:getX(), fakePlanets[i].body:getY(), fakePlanets[i].radius / 2, false)
+        local v = Vector(fakePlanets[i].body:getX(), fakePlanets[i].body:getY())
+        local planet = Planet(self.physicsWorld, v.x, v.y, fakePlanets[i].radius / World.PLANET_RADIUS_SHRINK_FACTOR, false)
+
         table.insert(self.planets, planet)
         table.insert(self.objects, planet)
+
+        if v:len() + fakePlanets[i].radius > self.radius then
+            self.radius = v:len() + fakePlanets[i].radius
+        end
 
         local player = Player(self.physicsWorld, planet, math.random(2 * math.pi))
         table.insert(self.objects, player)
@@ -148,7 +166,7 @@ end
 
 function World:draw()
     self.camera:draw(function()
-        love.graphics.circle('line', 0, 0, World.RADIUS)
+        love.graphics.circle('line', 0, 0, self.radius)
 
         for _, object in pairs(self.objects) do
             object:draw()
