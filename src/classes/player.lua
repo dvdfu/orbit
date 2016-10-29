@@ -14,6 +14,7 @@ function Player:init(world, planets, x, y)
     Movable.init(self, world, planets, x, y, 16)
 
     self.ground = nil
+    self.points = 0
 
     self.body:setLinearDamping(0.5)
     self.body:setAngularDamping(0.5)
@@ -26,6 +27,9 @@ function Player:init(world, planets, x, y)
             if data.tag == 'Planet' then
                 -- Signal.emit('cam_shake', 4)
                 self.ground = data.object
+            elseif data.tag == 'Bit' then
+                data.object.dead = true
+                self.points = self.points + 1
             end
         end,
         endCollide = function(data)
@@ -55,6 +59,11 @@ function Player:update(dt)
         local d = (self.pos - self.ground.pos):normalized():perpendicular() * Player.moveForce
         self.body:applyLinearImpulse(d:unpack())
     end
+end
+
+function Player:draw()
+    love.graphics.print(self.points, self.pos.x - 4, self.pos.y - 4)
+    Movable.draw(self)
 end
 
 return Player

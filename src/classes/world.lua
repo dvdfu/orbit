@@ -76,8 +76,13 @@ end
 function World:update(dt)
     self.physicsWorld:update(dt)
 
-    for _, object in pairs(self.objects) do
-        object:update(dt)
+    for key, object in pairs(self.objects) do
+        if object:isDead() then
+            object.body:destroy()
+            table.remove(self.objects, key)
+        else
+            object:update(dt)
+        end
     end
 
     local cameraVec = Vector()
