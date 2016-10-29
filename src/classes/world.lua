@@ -97,11 +97,20 @@ function World:generatePlanets()
         if allAsleep then break end
     end
 
+    local maxDistance = -1
     for i = 1, World.NUM_PLANETS do
-        local planet = Planet(self.physicsWorld, fakePlanets[i].body:getX(), fakePlanets[i].body:getY(), fakePlanets[i].radius / 2, false)
+        local v = Vector(fakePlanets[i].body:getX(), fakePlanets[i].body:getY())
+        local planet = Planet(self.physicsWorld, v.x, v.y, fakePlanets[i].radius / 2, false)
+
         table.insert(self.planets, planet)
         table.insert(self.objects, planet)
+
+        if v:len() + fakePlanets[i].radius > maxDistance then
+            maxDistance = v:len() + fakePlanets[i].radius
+        end
     end
+
+    World.RADIUS = maxDistance
 
     genWorld:destroy()
 end
