@@ -16,7 +16,8 @@ function Body:init(world, x, y, radius, dynamic)
     self.fixture:setUserData({
         object = self,
         tag = 'Body',
-        collide = function() end
+        collide = function() end,
+        endCollide = function() end
     })
 end
 

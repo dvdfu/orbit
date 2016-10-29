@@ -14,7 +14,8 @@ function Planet:init(world, x, y, radius)
     self.fixture:setUserData({
         object = self,
         tag = 'Planet',
-        collide = function(data) end
+        collide = function(data) end,
+        endCollide = function(data) end
     })
 end
 

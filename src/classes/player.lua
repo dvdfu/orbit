@@ -23,6 +23,11 @@ function Player:init(world, planets, x, y)
             if data.tag == 'Planet' then
                 self.ground = data.object
             end
+        end,
+        endCollide = function(data)
+            if data.tag == 'Planet' and data.object == self.ground then
+                self.ground = nil
+            end
         end
     })
 end
@@ -35,6 +40,16 @@ function Player:update(dt)
 
         self.body:applyLinearImpulse(d:unpack())
         self.ground = nil
+    end
+
+    if Keyboard.isDown('left') and self.ground then
+        local d = -(self.pos - self.ground.pos):normalized():perpendicular() * 20
+        self.body:applyLinearImpulse(d:unpack())
+    end
+
+    if Keyboard.isDown('right') and self.ground then
+        local d = (self.pos - self.ground.pos):normalized():perpendicular() * 20
+        self.body:applyLinearImpulse(d:unpack())
     end
 end
 
