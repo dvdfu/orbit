@@ -12,7 +12,7 @@ function Bit:init(world, planets, x, y)
 
     self.body:setLinearDamping(0.5)
     self.body:setAngularDamping(0.5)
-    self.fixture:setRestitution(0.9)
+    self.fixture:setRestitution(0.5)
 
     self.fixture:setUserData({
         object = self,
