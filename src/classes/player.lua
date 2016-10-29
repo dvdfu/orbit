@@ -7,14 +7,14 @@ local Movable = require 'src.mixins.movable'
 local Player = Class {
     RADIUS = 12,
     MOVE_FORCE = 400,
-    sprTrail = love.graphics.newImage('res/circle.png'),
 }
 Player:include(Body)
 
-function Player:init(world, planet, angle)
+function Player:init(world, level, planet, angle)
     local x, y = (planet.pos + (planet.radius + Player.RADIUS) * Vector(1, 0):rotated(angle)):unpack()
     Body.init(self, world, x, y, Player.RADIUS, true)
 
+    self.level = level
     self.planet = planet
     self.points = 0
     self.direction = 0
@@ -53,9 +53,12 @@ function Player:update(dt)
     local rsy = joystick:getGamepadAxis('righty')
     self.direction = math.atan2(rsy, rsx)
 
-    -- if joystick:isGamepadDown('rightshoulder') then
-    --     self.body:applyForce((-direction * 2000):unpack())
-    -- end
+    if joystick:isGamepadDown('rightshoulder') then
+        if self.points > 0 then
+            self.points = self.points - 1
+            self.level:shoot(self)
+        end
+    end
 
     Body.update(self, dt)
 end

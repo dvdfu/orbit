@@ -1,11 +1,11 @@
-local Class  = require 'modules.hump.class'
-local Signal = require 'modules.hump.signal'
-local Vector = require 'modules.hump.vector'
-local Camera = require 'src.camera'
-local Bit    = require 'src.classes.bit'
-local Planet = require 'src.classes.planet'
-local Player = require 'src.classes.player'
-local Body   = require 'src.mixins.body'
+local Class    = require 'modules.hump.class'
+local Signal   = require 'modules.hump.signal'
+local Vector   = require 'modules.hump.vector'
+local Camera   = require 'src.camera'
+local Bit      = require 'src.classes.bit'
+local Planet   = require 'src.classes.planet'
+local Player   = require 'src.classes.player'
+local Body     = require 'src.mixins.body'
 local Asteroid = require 'src.classes.asteroid'
 
 local World = Class {
@@ -42,7 +42,23 @@ local function endContact(a, b, coll)
 end
 
 local function preSolve(a, b, coll) end
+
 local function postSolve(a, b, coll, normal, tangent) end
+
+local function contactFilter(a, b)
+    local aData = a:getUserData()
+    local bData = b:getUserData()
+
+    if aData.tag == 'Bit' then
+        if bData.object == aData.object.owner then return false end
+    end
+
+    if bData.tag == 'Bit' then
+        if aData.object == bData.object.owner then return false end
+    end
+
+    return true
+end
 
 function World:init()
     Signal.register('cam_shake', function(shake)
@@ -51,6 +67,7 @@ function World:init()
 
     self.physicsWorld = love.physics.newWorld(0, 0, true)
     self.physicsWorld:setCallbacks(beginContact, endContact, preSolve, postSolve)
+    self.physicsWorld:setContactFilter(contactFilter)
 
     self.camera = Camera(8)
     self.planets = {}
@@ -64,8 +81,8 @@ end
 function World:generate()
     self:generatePlanets()
 
-    for i = 1, 100 do
-        local bit = Bit(self.physicsWorld, self.planets, 0, 0)
+    for i = 1, 300 do
+        local bit = Bit(self.physicsWorld, self.planets, nil, 0, 0)
         bit.body:applyLinearImpulse(math.random(8), math.random(8))
         table.insert(self.objects, bit)
     end
@@ -115,12 +132,19 @@ function World:generatePlanets()
             self.radius = v:len() + fakePlanets[i].radius
         end
 
-        local player = Player(self.physicsWorld, planet, math.random(2 * math.pi))
+        local player = Player(self.physicsWorld, self, planet, math.random(2 * math.pi))
         table.insert(self.objects, player)
         table.insert(self.players, player)
     end
 
     genWorld:destroy()
+end
+
+function World:shoot(player)
+    local bit = Bit(self.physicsWorld, self.planets, player, player.pos.x, player.pos.y)
+    local ix, iy = 16 * math.cos(player.direction), 16 * math.sin(player.direction)
+    bit.body:applyLinearImpulse(ix, iy)
+    table.insert(self.objects, bit)
 end
 
 function World:update(dt)
@@ -130,7 +154,7 @@ function World:update(dt)
         if object:isDead() then
             if(object.fixture:getUserData().tag == 'Asteroid') then
               for i = 1, 5 do
-                  local bit = Bit(self.physicsWorld, self.planets, object.body:getX(), object.body:getY())
+                  local bit = Bit(self.physicsWorld, self.planets, nil, object.body:getX(), object.body:getY())
                   bit.body:applyLinearImpulse(math.random(8), math.random(8))
                   table.insert(self.objects, bit)
               end
