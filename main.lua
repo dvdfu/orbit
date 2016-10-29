@@ -20,7 +20,5 @@ end
 
 function love.draw()
     player:draw()
-    for _, planet in pairs(world.planets) do
-        planet:draw()
-    end
+    world:draw()
 end
