@@ -40,7 +40,7 @@ end
 
 function Camera:shake(shake, direction)
     shake = shake or 30
-    direction = direction or math.random(math.pi * 2)
+    direction = direction or RNG:random(math.pi * 2)
     self.shakeVec = Vector(shake, 0)
     self.shakeVec:rotateInplace(-direction)
 
