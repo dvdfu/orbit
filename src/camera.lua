@@ -39,7 +39,7 @@ function Camera:zoomTo(zoom)
 end
 
 function Camera:shake(shake, direction)
-    shake = shake or 4
+    shake = shake or 30
     direction = direction or math.random(math.pi * 2)
     self.shakeVec = Vector(shake, 0)
     self.shakeVec:rotateInplace(-direction)

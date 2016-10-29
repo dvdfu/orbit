@@ -7,6 +7,7 @@ local Player = Class {
     radius = 12,
     density = 1,
     thrust = 16,
+    sprTrail = love.graphics.newImage('res/circle.png')
 }
 Player:include(Movable)
 
@@ -26,7 +27,7 @@ function Player:init(world, planets, x, y)
         tag = 'Player',
         collide = function(data)
             if data.tag == 'Planet' then
-                -- Signal.emit('cam_shake', 4)
+                -- Signal.emit('cam_shake', 40, self.direction)
                 self.ground = data.object
             elseif data.tag == 'Bit' then
                 data.object.dead = true
@@ -39,6 +40,10 @@ function Player:init(world, planets, x, y)
             end
         end
     })
+
+    self.trail = love.graphics.newParticleSystem(Player.sprTrail)
+    self.trail:setParticleLifetime(0.3)
+    self.trail:setSizes(1, 0)
 end
 
 function Player:update(dt)
@@ -56,12 +61,17 @@ function Player:update(dt)
     if Keyboard.isDown('right') then
         self.direction = self.direction + 4 * math.pi / 180
     end
+
+    self.trail:setPosition(self.pos:unpack())
+    self.trail:emit(1)
+    self.trail:update(dt)
 end
 
 function Player:draw()
     love.graphics.print(self.points, self.pos.x - 4, self.pos.y - 4)
     love.graphics.circle('fill', self.pos.x + 16 * math.cos(self.direction), self.pos.y + 16 * math.sin(self.direction), 4)
     Movable.draw(self)
+    love.graphics.draw(self.trail)
 end
 
 return Player

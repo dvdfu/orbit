@@ -8,7 +8,8 @@ local Player = require 'src.classes.player'
 local Body   = require 'src.mixins.body'
 
 local World = Class {
-    RADIUS = 300
+    RADIUS = 300,
+    NUM_PLANETS = 4
 }
 
 local function beginContact(a, b, coll)
@@ -42,7 +43,6 @@ function World:init()
     self.physicsWorld = love.physics.newWorld(0, 0, true)
     self.physicsWorld:setCallbacks(beginContact, endContact, preSolve, postSolve)
 
-    self.fakePlanets = {}
     self.planets = {}
     self.players = {}
     self.objects = {}
@@ -53,10 +53,7 @@ function World:init()
     table.insert(self.objects, player)
     table.insert(self.players, player)
 
-    -- player = Player(self.physicsWorld, self.planets, -200, 20)
-    -- table.insert(self.objects, player)
-    -- table.insert(self.players, player)
-    self.camera = Camera(20)
+    self.camera = Camera(8)
 end
 
 function World:generate()
@@ -70,33 +67,35 @@ function World:generate()
 end
 
 function World:generatePlanets()
+    local fakePlanets = {}
     local genWorld = love.physics.newWorld(0, 0, true)
     genWorld:setCallbacks(beginContact, endContact, preSolve, postSolve)
 
-    local numberOfPlanets = 59
-
-    for i = 1, numberOfPlanets do
+    for i = 1, World.NUM_PLANETS do
         local planet = Body(genWorld, math.random(-10, 10), math.random(-10, 10), math.random(100, 200), true)
-        table.insert(self.fakePlanets, planet)
+        table.insert(fakePlanets, planet)
     end
 
-    local stillResolving = true
-    while stillResolving do
+    while true do
         genWorld:update(1)
 
-        for _, v in pairs(self.fakePlanets) do
-            stillResolving = false
+        local allAsleep = true
+        for _, v in pairs(fakePlanets) do
             if v.body:isAwake() then
-                stillResolving = true
+                allAsleep = false
             end
         end
+
+        if allAsleep then break end
     end
 
-    for i = 1, numberOfPlanets do
-        local planet = Planet(self.physicsWorld, self.fakePlanets[i].body:getX(), self.fakePlanets[i].body:getY(), self.fakePlanets[i].radius / 2, false)
+    for i = 1, World.NUM_PLANETS do
+        local planet = Planet(self.physicsWorld, fakePlanets[i].body:getX(), fakePlanets[i].body:getY(), fakePlanets[i].radius / 2, false)
         table.insert(self.planets, planet)
         table.insert(self.objects, planet)
     end
+
+    genWorld:destroy()
 end
 
 function World:update(dt)
