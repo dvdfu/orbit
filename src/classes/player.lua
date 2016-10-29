@@ -19,7 +19,7 @@ function Player:init(id, world, level, planet, angle)
     self.weapon = Weapon(level, self, Const.weapons.pistol)
     self.level = level
     self.planet = planet
-    self.points = 0
+    self.points = 100
     self.direction = 0
 
     self.body:setLinearDamping(4)
@@ -45,17 +45,26 @@ function Player:update(dt)
     self.body:applyForce((direction * magnitude):unpack())
 
     local ls = Vector(self.joystick:getGamepadAxis('leftx'), self.joystick:getGamepadAxis('lefty'))
-    if ls:len() > 0.05 then
+    if ls:len() > 0.25 then
         self.body:applyForce((ls:normalized() * Player.MOVE_FORCE):unpack())
     end
 
-    local rsx = self.joystick:getGamepadAxis('rightx')
-    local rsy = self.joystick:getGamepadAxis('righty')
-    self.direction = math.atan2(rsy, rsx)
+    local rs = Vector(self.joystick:getGamepadAxis('righty'), self.joystick:getGamepadAxis('rightx'))
+    if rs:len() > 0.25 then
+        self.direction = math.atan2(rs:unpack())
+    end
 
     self.weapon:update(dt)
     if self.joystick:isGamepadDown('rightshoulder') then
         self.weapon:shoot()
+    end
+
+    if self.joystick:isGamepadDown('y') then
+        if self.weapon.type == Const.weapons.pistol then
+            self.weapon:setWeaponType(Const.weapons.machineGun)
+        else
+            self.weapon:setWeaponType(Const.weapons.pistol)
+        end
     end
 
     Body.update(self, dt)

@@ -17,6 +17,7 @@ function Weapon:update(dt)
 end
 
 function Weapon:setWeaponType(type)
+    self.type = type
     self.fireRate = type.fireRate
     self.bulletSpeed = type.bulletSpeed
 end

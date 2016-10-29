@@ -10,6 +10,10 @@ Const.weapons = {
     pistol = {
         fireRate = 0.25,
         bulletSpeed = 8
+    },
+    machineGun = {
+        fireRate = 0.05,
+        bulletSpeed = 10
     }
 }
 
