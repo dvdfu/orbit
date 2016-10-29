@@ -30,53 +30,53 @@ local World = Class {
         #define tile   1
         #define speed  0.010
 
-        #define brightness 0.003
+        #define brightness 0.001
         #define darkmatter 0.300
         #define distfading 0.730
         #define saturation 0.850
 
         vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
-        	//get coords and direction
-        	vec2 uv=screen_coords.xy/iResolution-.5;
-        	uv.y*=iResolution.y/iResolution.x;
-        	vec3 dir=vec3(uv*zoom,1.);
-        	float time=iGlobalTime*speed+.25;
+        	// get coords and direction
+        	vec2 uv = screen_coords.xy / iResolution - 0.5;
+        	uv.y *= iResolution.y / iResolution.x;
+        	vec3 dir = vec3(uv * zoom, 1.0);
+        	float time = iGlobalTime * speed + 0.25;
 
-        	//mouse rotation
-        	float a1=.5+iMouse.x/iResolution.x*2.;
-        	float a2=.8+iMouse.y/iResolution.y*2.;
-        	mat2 rot1=mat2(cos(a1),sin(a1),-sin(a1),cos(a1));
-        	mat2 rot2=mat2(cos(a2),sin(a2),-sin(a2),cos(a2));
-        	dir.xz*=rot1;
-        	dir.xy*=rot2;
-        	vec3 from=vec3(1.,.5,0.5);
-        	from+=vec3(time*2.,time,-2.);
-        	from.xz*=rot1;
-        	from.xy*=rot2;
+        	// mouse rotation
+        	float a1 = 0.5 + iMouse.x / iResolution.x * 2.0;
+        	float a2 = 0.8 + iMouse.y / iResolution.y * 2.0;
+        	mat2 rot1 = mat2(cos(a1), sin(a1), -sin(a1), cos(a1));
+        	mat2 rot2 = mat2(cos(a2), sin(a2), -sin(a2), cos(a2));
+        	dir.xz *= rot1;
+        	dir.xy *= rot2;
+        	vec3 from = vec3(1.0, 0.5, 0.5);
+        	from += vec3(time * 2.0, time, -2.0);
+        	from.xz *= rot1;
+        	from.xy *= rot2;
 
-        	//volumetric rendering
-        	float s=0.1,fade=1.;
-        	vec3 v=vec3(0.);
-        	for (int r=0; r<volsteps; r++) {
-        		vec3 p=from+s*dir*.5;
-        		p = abs(vec3(tile)-mod(p,vec3(tile*2.))); // tiling fold
-        		float pa,a=pa=0.;
-        		for (int i=0; i<iterations; i++) {
-        			p=abs(p)/dot(p,p)-formuparam; // the magic formula
-        			a+=abs(length(p)-pa); // absolute sum of average change
-        			pa=length(p);
+        	// volumetric rendering
+        	float s = 0.1, fade = 1.0;
+        	vec3 v = vec3(0.0);
+        	for (int r = 0; r < volsteps; r++) {
+        		vec3 p = from + s * dir * 0.5;
+        		p = abs(vec3(tile) - mod(p, vec3(tile * 2.0))); // tiling fold
+        		float pa, a = pa = 0.0;
+        		for (int i = 0; i < iterations; i++) {
+        			p = abs(p) / dot(p, p)-formuparam; // the magic formula
+        			a += abs(length(p) - pa); // absolute sum of average change
+        			pa = length(p);
         		}
-        		float dm=max(0.,darkmatter-a*a*.001); //dark matter
-        		a*=a*a; // add contrast
-        		if (r>6) fade*=1.-dm; // dark matter, don't render near
-        		//v+=vec3(dm,dm*.5,0.);
-        		v+=fade;
-        		v+=vec3(s,s*s,s*s*s*s)*a*brightness*fade; // coloring based on distance
-        		fade*=distfading; // distance fading
-        		s+=stepsize;
+        		float dm = max(0.0, darkmatter - a * a * 0.001); // dark matter
+        		a *= a * a; // add contrast
+        		if (r > 6) fade *= 1.0 - dm; // dark matter, don't render near
+        		//v += vec3(dm,dm * 0.5, 0.0);
+        		v += fade;
+        		v += vec3(s, s * s, s * s * s * s) * a * brightness * fade; // coloring based on distance
+        		fade *= distfading; // distance fading
+        		s += stepsize;
         	}
-        	v=mix(vec3(length(v)),v,saturation); //color adjust
-        	return vec4(v*.01,1.);
+        	v = mix(vec3(length(v)), v, saturation); //color adjust
+        	return vec4(v * 0.01, 1.0);
         }
 
         vec4 position(mat4 transform_projection, vec4 vertex_position) {
@@ -149,7 +149,7 @@ end
 function World:generate()
     self:generatePlanets()
 
-    for i = 1, 100 do
+    for i = 1, 10 do
         local bit = Bit(self.physicsWorld, self.planets, nil, 0, 0)
         table.insert(self.objects, bit)
     end
@@ -221,7 +221,6 @@ function World:update(dt)
             if(object.fixture:getUserData().tag == 'Asteroid') then
               for i = 1, 5 do
                   local bit = Bit(self.physicsWorld, self.planets, nil, object.body:getX(), object.body:getY())
-                  bit.body:applyLinearImpulse(RNG:random(8), RNG:random(8))
                   table.insert(self.objects, bit)
               end
             end
@@ -266,9 +265,9 @@ function World:draw()
         self.camera.pos.y / 100
     })
     World.SPACE_SHADER:send('iGlobalTime', 0)
-    love.graphics.setShader(World.SPACE_SHADER)
-    love.graphics.rectangle('fill', 0, 0, love.graphics.getDimensions())
-    love.graphics.setShader()
+    -- love.graphics.setShader(World.SPACE_SHADER)
+    -- love.graphics.rectangle('fill', 0, 0, love.graphics.getDimensions())
+    -- love.graphics.setShader()
 
     self.camera:draw(function()
         love.graphics.circle('line', 0, 0, self.radius)

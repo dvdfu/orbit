@@ -9,11 +9,11 @@ Const.colors = {
 Const.weapons = {
     pistol = {
         fireRate = 0.25,
-        bulletSpeed = 8
+        bulletSpeed = 100
     },
     machineGun = {
         fireRate = 0.05,
-        bulletSpeed = 10
+        bulletSpeed = 100
     }
 }
 
