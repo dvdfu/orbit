@@ -10,9 +10,8 @@ Bit:include(Movable)
 function Bit:init(world, planets, x, y)
     Movable.init(self, world, planets, x, y, 3)
 
-    self.body:setLinearDamping(0.5)
-    self.body:setAngularDamping(0.5)
-    self.fixture:setRestitution(0.5)
+    self.body:setFixedRotation(true)
+    self.fixture:setRestitution(0.6)
 
     self.fixture:setUserData({
         object = self,

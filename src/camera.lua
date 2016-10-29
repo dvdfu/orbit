@@ -17,7 +17,7 @@ function Camera:update(dt)
     self.shakeTimer:update(dt)
 
     -- damp camera movement if non-trivial
-    local delta = self.target.pos - self.pos
+    local delta = self.target - self.pos
     if delta:len2() > 0.1 then
         delta = delta / self.damping
     end
@@ -61,8 +61,8 @@ function Camera:draw(callback)
     translation = translation + self.shakeVec
 
     love.graphics.push()
-    love.graphics.translate(translation:unpack())
     love.graphics.scale(self.zoom)
+    love.graphics.translate(translation:unpack())
     callback()
     love.graphics.scale(1)
     love.graphics.pop()

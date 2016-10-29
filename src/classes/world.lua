@@ -1,5 +1,6 @@
 local Class  = require 'modules.hump.class'
 local Signal = require 'modules.hump.signal'
+local Vector = require 'modules.hump.vector'
 local Camera = require 'src.camera'
 local Bit    = require 'src.classes.bit'
 local Planet = require 'src.classes.planet'
@@ -7,7 +8,7 @@ local Player = require 'src.classes.player'
 local Body   = require 'src.mixins.body'
 
 local World = Class {
-    RADIUS = 320
+    RADIUS = 300
 }
 
 local function beginContact(a, b, coll)
@@ -42,44 +43,50 @@ function World:init()
     self.physicsWorld:setCallbacks(beginContact, endContact, preSolve, postSolve)
 
     self.planets = {}
-    self.bits = {}
     self.players = {}
+    self.objects = {}
+
     local player = Player(self.physicsWorld, self.planets, 200, 20)
+    table.insert(self.objects, player)
     table.insert(self.players, player)
 
     player = Player(self.physicsWorld, self.planets, -200, 20)
+    table.insert(self.objects, player)
     table.insert(self.players, player)
 
     self.camera = Camera(20)
-    self.camera:follow(player)
 
     self:generate()
 end
 
 function World:generate()
-    table.insert(self.planets, Planet(self.physicsWorld, -100, -100, 50))
-    table.insert(self.planets, Planet(self.physicsWorld, -100, 100, 50))
-    table.insert(self.planets, Planet(self.physicsWorld, 100, -100, 50))
-    table.insert(self.planets, Planet(self.physicsWorld, 100, 100, 50))
+    for i = 1, 4 do
+        local planet = Planet(self.physicsWorld, math.random(-World.RADIUS, World.RADIUS), math.random(-World.RADIUS, World.RADIUS), math.random(50, 100))
+        table.insert(self.planets, planet)
+        table.insert(self.objects, planet)
+    end
 
     for i = 1, 100 do
-        local bit = Bit(self.physicsWorld, self.planets, math.random(800), math.random(800))
+        local bit = Bit(self.physicsWorld, self.planets, 0, 0)
         bit.body:applyLinearImpulse(math.random(8), math.random(8))
-        table.insert(self.bits, bit)
+        table.insert(self.objects, bit)
     end
 end
 
 function World:update(dt)
     self.physicsWorld:update(dt)
 
-    for _, bit in pairs(self.bits) do
-        bit:update(dt)
+    for _, object in pairs(self.objects) do
+        object:update(dt)
     end
 
+    local cameraVec = Vector()
     for _, player in pairs(self.players) do
-        player:update(dt)
+        cameraVec = cameraVec + player.pos
     end
+    cameraVec = cameraVec / #self.players
 
+    self.camera:follow(cameraVec)
     self.camera:update(dt)
 end
 
@@ -87,16 +94,8 @@ function World:draw()
     self.camera:draw(function()
         love.graphics.circle('line', 0, 0, World.RADIUS)
 
-        for _, player in pairs(self.players) do
-            player:draw()
-        end
-
-        for _, planet in pairs(self.planets) do
-            planet:draw()
-        end
-
-        for _, bit in pairs(self.bits) do
-            bit:draw()
+        for _, object in pairs(self.objects) do
+            object:draw()
         end
     end)
 end
