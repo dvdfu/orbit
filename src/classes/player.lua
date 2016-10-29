@@ -4,13 +4,14 @@ local Vector  = require 'modules.hump.vector'
 local Movable = require 'src.mixins.movable'
 
 local Player = Class {
+    radius = 12,
     density = 1,
-    thrust = 20,
+    thrust = 16,
 }
 Player:include(Movable)
 
 function Player:init(world, planets, x, y)
-    Movable.init(self, world, planets, x, y, 16)
+    Movable.init(self, world, planets, x, y, Player.radius)
 
     self.ground = nil
     self.points = 0
