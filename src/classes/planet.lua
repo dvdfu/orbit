@@ -1,18 +1,14 @@
 local Class = require 'modules.hump.class'
 local Vector = require 'modules.hump.vector'
+local Circle = require 'src.classes.circle'
 
-local Planet = Class {}
+local Planet = Class {
+    density = 1
+}
+Planet:include(Circle)
 
 function Planet:init(x, y, radius)
-    self.pos = Vector(x, y)
-    self.radius = radius
-end
-
-function Planet:update(dt)
-end
-
-function Planet:draw()
-    love.graphics.circle('line', self.pos.x, self.pos.y, self.radius)
+    Circle.init(self, x, y, radius)
 end
 
 return Planet

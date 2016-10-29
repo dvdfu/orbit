@@ -1,24 +1,25 @@
 local Planet = require 'src.classes.planet'
+local Player = require 'src.classes.player'
 
+local world
 local planets = {}
-local delta
+local player
 
 function love.load()
-    for i = 1, 10 do
-        table.insert(planets, Planet(i * 50, i * 50, 10))
-    end
+    world = love.physics.newWorld(0, 0, true)
+    table.insert(planets, Planet(200, 200, 50))
+
+    player = Player(world, planets, 100, 100)
 end
 
 function love.update(dt)
-    delta = dt
-    for i = 1, 10 do
-        planets[i]:update(dt)
-    end
+    player:update(dt)
+    world:update(dt)
 end
 
 function love.draw()
-    love.graphics.print(delta, 5, 5)
-    for i = 1, 10 do
-        planets[i]:draw()
+    player:draw()
+    for _, planet in pairs(planets) do
+        planet:draw()
     end
 end
