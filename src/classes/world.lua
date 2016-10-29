@@ -9,7 +9,7 @@ local Body     = require 'src.mixins.body'
 local Asteroid = require 'src.classes.asteroid'
 
 local World = Class {
-    NUM_PLANETS = 4,
+    NUM_PLANETS = love.joystick.getJoystickCount(),
 
     -- Generation Parameters
     PLANET_STARTING_POSITION = { low = -10, high = 10 },
@@ -81,9 +81,8 @@ end
 function World:generate()
     self:generatePlanets()
 
-    for i = 1, 300 do
+    for i = 1, 100 do
         local bit = Bit(self.physicsWorld, self.planets, nil, 0, 0)
-        bit.body:applyLinearImpulse(RNG:random(8), RNG:random(8))
         table.insert(self.objects, bit)
     end
 
@@ -121,6 +120,7 @@ function World:generatePlanets()
     end
 
     self.radius = 0
+
     for i = 1, World.NUM_PLANETS do
         local v = Vector(fakePlanets[i].body:getX(), fakePlanets[i].body:getY())
         local planet = Planet(self.physicsWorld, v.x, v.y, fakePlanets[i].radius / World.PLANET_RADIUS_SHRINK_FACTOR, false)
@@ -132,7 +132,8 @@ function World:generatePlanets()
             self.radius = v:len() + fakePlanets[i].radius
         end
 
-        local player = Player(self.physicsWorld, self, planet, RNG:random(2 * math.pi))
+
+        local player = Player(i, self.physicsWorld, self, planet, RNG:random(2 * math.pi))
         table.insert(self.objects, player)
         table.insert(self.players, player)
     end
@@ -142,7 +143,7 @@ end
 
 function World:shoot(player)
     local bit = Bit(self.physicsWorld, self.planets, player, player.pos.x, player.pos.y)
-    local ix, iy = 16 * math.cos(player.direction), 16 * math.sin(player.direction)
+    local ix, iy = Bit.SPEED * math.cos(player.direction), Bit.SPEED * math.sin(player.direction)
     bit.body:applyLinearImpulse(ix, iy)
     table.insert(self.objects, bit)
 end

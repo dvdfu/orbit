@@ -3,13 +3,15 @@ local Vector = require 'modules.hump.vector'
 local Movable = require 'src.mixins.movable'
 
 local Bit = Class {
+    RADIUS = 2,
+    SPEED = 6,
     density = 1,
     sprTrail = love.graphics.newImage('res/circle.png'),
 }
 Bit:include(Movable)
 
 function Bit:init(world, planets, owner, x, y)
-    Movable.init(self, world, planets, x, y, 3)
+    Movable.init(self, world, planets, x, y, Bit.RADIUS)
 
     self.body:setFixedRotation(true)
     self.fixture:setRestitution(0.8)
@@ -27,7 +29,7 @@ function Bit:init(world, planets, owner, x, y)
     self.owner = owner
 
     self.trail = love.graphics.newParticleSystem(Bit.sprTrail)
-    self.trail:setParticleLifetime(0.3)
+    self.trail:setParticleLifetime(1)
     self.trail:setSizes(0.3, 0)
 end
 
@@ -40,15 +42,16 @@ function Bit:update(dt)
 end
 
 function Bit:draw()
-    if owner then
-        love.graphics.setColor(255, 0, 0)
+    if self.owner then
+        love.graphics.setColor(Const.colors[self.owner.id]())
         Movable.draw(self)
+        love.graphics.draw(self.trail)
         love.graphics.setColor(255, 255, 255)
     else
         Movable.draw(self)
+        love.graphics.draw(self.trail)
     end
 
-    love.graphics.draw(self.trail)
 end
 
 return Bit

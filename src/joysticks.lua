@@ -1,18 +1,9 @@
-local Joysticks = {}
-local self = {}
+local Joystick = {}
 
-function Joysticks.init()
-    self.sticks = love.joystick.getJoysticks()
+function Joystick:init()
 end
 
-function Joysticks.update()
-    for i = 1, love.joystick.getJoystickCount() do
-        sticks[i] = love.joystick.getJoysticks()[i]
-    end
+function Joystick:update(dt)
 end
 
-function Joysticks.get(i)
-    return self.sticks[i]
-end
-
-return Joysticks
+return Joystick

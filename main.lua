@@ -1,5 +1,6 @@
 RNG = love.math.newRandomGenerator(love.timer.getTime())
 
+Const = require 'src.const'
 Joysticks = require 'src.joysticks'
 Keyboard = require 'src.keyboard'
 
