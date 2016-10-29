@@ -12,7 +12,6 @@ function Asteroid:init(world, planets, x, y, radius)
 
   self.body:setLinearDamping(5)
   self.body:setMass(10);
-  -- self.body:setAngularDamping(1)
 
   self.fixture:setUserData({
       object = self,
@@ -37,4 +36,5 @@ end
 function Asteroid:draw()
   love.graphics.circle('fill', self.pos.x, self.pos.y, self.radius)
 end
+
 return Asteroid

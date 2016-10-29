@@ -12,6 +12,7 @@ Bit:include(Movable)
 
 function Bit:init(world, planets, owner, x, y)
     Movable.init(self, world, planets, x, y, Bit.RADIUS)
+    self.body:setBullet(true)
 
     self.body:setFixedRotation(true)
     self.fixture:setRestitution(0.8)
@@ -45,11 +46,11 @@ function Bit:draw()
     if self.owner then
         love.graphics.setColor(Const.colors[self.owner.id]())
         Movable.draw(self)
-        love.graphics.draw(self.trail)
+        -- love.graphics.draw(self.trail)
         love.graphics.setColor(255, 255, 255)
     else
         Movable.draw(self)
-        love.graphics.draw(self.trail)
+        -- love.graphics.draw(self.trail)
     end
 
 end

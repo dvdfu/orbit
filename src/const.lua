@@ -6,4 +6,11 @@ Const.colors = {
     [3] = function() return 0, 0, 255 end,
 }
 
+Const.weapons = {
+    pistol = {
+        fireRate = 0.25,
+        bulletSpeed = 8
+    }
+}
+
 return Const

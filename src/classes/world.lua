@@ -209,11 +209,8 @@ function World:generatePlanets()
     genWorld:destroy()
 end
 
-function World:shoot(player)
-    local bit = Bit(self.physicsWorld, self.planets, player, player.pos.x, player.pos.y)
-    local ix, iy = Bit.SPEED * math.cos(player.direction), Bit.SPEED * math.sin(player.direction)
-    bit.body:applyLinearImpulse(ix, iy)
-    table.insert(self.objects, bit)
+function World:addObject(object)
+    table.insert(self.objects, object)
 end
 
 function World:update(dt)
