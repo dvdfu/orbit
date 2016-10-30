@@ -25,7 +25,8 @@ Const.quotes = {
     [8] = "Don't drink and drive",
     [9] = "Smile!",
     [10] = "Team Rocket, blasting off again",
-    [11] = "It's not right, it's not fair"
+    [11] = "It's not right, it's not fair",
+    [12] = "You can be unethical, or be a cool cat"
 }
 
 Const.weapons = {
