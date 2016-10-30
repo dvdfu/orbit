@@ -48,7 +48,7 @@ Const.spaceShader = [[
     #define iterations 17
     #define formuparam 0.53
 
-    #define volsteps 2
+    #define volsteps 4
     #define stepsize 0.1
 
     uniform float zoom;
