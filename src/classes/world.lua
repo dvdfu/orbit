@@ -5,84 +5,18 @@ local Camera   = require 'src.camera'
 local Bit      = require 'src.classes.bit'
 local Planet   = require 'src.classes.planet'
 local Player   = require 'src.classes.player'
+local Sun      = require 'src.classes.sun'
 local Body     = require 'src.mixins.body'
 local Asteroid = require 'src.classes.asteroid'
 
 local World = Class {
-    NUM_PLANETS = 2,
+    NUM_PLANETS = 4,
 
     -- Generation Parameters
     PLANET_STARTING_POSITION = { low = -10, high = 10 },
     PLANET_RADIUS = { low = 150, high = 250 },
     PLANET_RADIUS_SHRINK_FACTOR = 3,
-    SPACE_SHADER = love.graphics.newShader([[
-        uniform vec2 iResolution;
-        uniform float iGlobalTime;
-        uniform vec2 iMouse;
-
-        #define iterations 17
-        #define formuparam 0.53
-
-        #define volsteps 2
-        #define stepsize 0.1
-
-        uniform float zoom;
-        #define tile   1
-        #define speed  0.010
-
-        #define brightness 0.001
-        #define darkmatter 0.300
-        #define distfading 0.730
-        #define saturation 0.850
-
-        vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
-        	// get coords and direction
-        	vec2 uv = screen_coords.xy / iResolution - 0.5;
-        	uv.y *= iResolution.y / iResolution.x;
-        	vec3 dir = vec3(uv * zoom, 1.0);
-        	float time = iGlobalTime * speed + 0.25;
-
-        	// mouse rotation
-        	float a1 = 0.5 + iMouse.x / iResolution.x * 2.0;
-        	float a2 = 0.8 + iMouse.y / iResolution.y * 2.0;
-        	mat2 rot1 = mat2(cos(a1), sin(a1), -sin(a1), cos(a1));
-        	mat2 rot2 = mat2(cos(a2), sin(a2), -sin(a2), cos(a2));
-        	dir.xz *= rot1;
-        	dir.xy *= rot2;
-        	vec3 from = vec3(1.0, 0.5, 0.5);
-        	from += vec3(time * 2.0, time, -2.0);
-        	from.xz *= rot1;
-        	from.xy *= rot2;
-
-        	// volumetric rendering
-        	float s = 0.1, fade = 1.0;
-        	vec3 v = vec3(0.0);
-        	for (int r = 0; r < volsteps; r++) {
-        		vec3 p = from + s * dir * 0.5;
-        		p = abs(vec3(tile) - mod(p, vec3(tile * 2.0))); // tiling fold
-        		float pa, a = pa = 0.0;
-        		for (int i = 0; i < iterations; i++) {
-        			p = abs(p) / dot(p, p)-formuparam; // the magic formula
-        			a += abs(length(p) - pa); // absolute sum of average change
-        			pa = length(p);
-        		}
-        		float dm = max(0.0, darkmatter - a * a * 0.001); // dark matter
-        		a *= a * a; // add contrast
-        		if (r > 6) fade *= 1.0 - dm; // dark matter, don't render near
-        		//v += vec3(dm,dm * 0.5, 0.0);
-        		v += fade;
-        		v += vec3(s, s * s, s * s * s * s) * a * brightness * fade; // coloring based on distance
-        		fade *= distfading; // distance fading
-        		s += stepsize;
-        	}
-        	v = mix(vec3(length(v)), v, saturation); //color adjust
-        	return vec4(v * 0.01, 1.0);
-        }
-
-        vec4 position(mat4 transform_projection, vec4 vertex_position) {
-            return transform_projection * vertex_position;
-        }
-    ]])
+    SPACE_SHADER = love.graphics.newShader(Const.spaceShader)
 }
 
 local function getInRange(range)
@@ -150,13 +84,7 @@ function World:generate()
     self:generatePlanets()
 
     for i = 1, 10 do
-        local bit = Bit(self.physicsWorld, self.planets, nil, 0, 0)
-        bit.body:applyLinearImpulse(RNG:random(-100, 100), RNG:random(-100, 100))
-        table.insert(self.objects, bit)
-    end
-
-    for i = 1, 1 do
-        local asteroid = Asteroid(self.physicsWorld, self.planets, RNG:random(-self.radius, self.radius), RNG:random(-self.radius, self.radius), RNG:random(15, 30))
+        local asteroid = Asteroid(self.physicsWorld, self.planets, self.radius * 2 * math.cos(RNG:random(0, math.pi * 2)), self.radius * 2 * math.sin(RNG:random(0, math.pi * 2)), RNG:random(15, 30))
         table.insert(self.objects, asteroid)
         table.insert(self.asteroids, asteroid)
     end
@@ -193,7 +121,12 @@ function World:generatePlanets()
 
     for i = 1, joysticks + World.NUM_PLANETS do
         local v = Vector(fakePlanets[i].body:getX(), fakePlanets[i].body:getY())
-        local planet = Planet(self.physicsWorld, v.x, v.y, fakePlanets[i].radius / World.PLANET_RADIUS_SHRINK_FACTOR, false)
+        local planet
+        if i == joysticks + 1 then
+            planet = Sun(self.physicsWorld, v.x, v.y, fakePlanets[i].radius / (World.PLANET_RADIUS_SHRINK_FACTOR / 1.5), false)
+        else
+            planet = Planet(self.physicsWorld, v.x, v.y, fakePlanets[i].radius / World.PLANET_RADIUS_SHRINK_FACTOR, false)
+        end
 
         table.insert(self.planets, planet)
         table.insert(self.objects, planet)
@@ -227,9 +160,14 @@ function World:update(dt)
             if object.fixture:getUserData().tag == 'Asteroid' then
                 for i = 1, 3 do
                     local bit = Bit(self.physicsWorld, self.planets, nil, object.body:getX(), object.body:getY())
+                    bit.body:applyLinearImpulse(RNG:random(-100, 100), RNG:random(-100, 100))
                     table.insert(self.objects, bit)
                 end
             elseif object.fixture:getUserData().tag == 'Player' then
+                for i = 1, object.points do
+                    local bit = Bit(self.physicsWorld, self.planets, nil, object.body:getX(), object.body:getY())
+                    table.insert(self.objects, bit)
+                end
                 table.remove(self.players, object.id)
                 if #self.players <= 1 then
                     Timer.after(1, function()
@@ -260,7 +198,12 @@ function World:handleCamera(dt)
         end
     end
 
-    cameraVec = cameraVec / #self.players
+    if #self.players > 0 then
+        cameraVec = cameraVec / #self.players
+    else
+        cameraVec = Vector()
+    end
+
     self.camera:follow(cameraVec)
 
     local zoom = math.min(1, 300 / (50 + playerDist))

@@ -3,7 +3,7 @@ local Movable = require 'src.mixins.movable'
 local Vector  = require 'modules.hump.vector'
 
 local Asteroid = Class {
-  density = 1,
+  SPRITE = love.graphics.newImage('res/asteroid.png'),
 }
 Asteroid:include(Movable);
 
@@ -11,7 +11,6 @@ function Asteroid:init(world, planets, x, y, radius)
   Movable.init(self, world, planets, x, y, radius)
 
   self.body:setLinearDamping(1)
-  -- self.body:setMass(10);
 
   self.fixture:setUserData({
       object = self,
@@ -34,7 +33,7 @@ function Asteroid:update(dt)
 end
 
 function Asteroid:draw()
-  love.graphics.circle('fill', self.pos.x, self.pos.y, self.radius)
+  love.graphics.draw(Asteroid.SPRITE, self.pos.x, self.pos.y, self.body:getAngle(), self.radius / 16, self.radius / 16, 16, 16)
 end
 
 return Asteroid

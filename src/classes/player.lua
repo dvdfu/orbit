@@ -8,7 +8,7 @@ local Weapon  = require 'src.classes.weapon'
 local Player = Class {
     RADIUS = 12,
     MOVE_FORCE = 4,
-    LAUNCH_FORCE = 200,
+    LAUNCH_FORCE = 300,
     THRUST_FORCE = 200,
     SPRITE = love.graphics.newImage('res/rocket.png'),
     SPR_TRAIL = love.graphics.newImage('res/circle.png')
@@ -43,6 +43,9 @@ function Player:init(id, world, level, planet, planets, angle)
                 end
             elseif data.tag == 'Planet' then
                 self.groundPlanet = data.object
+            elseif data.tag == 'Sun' then
+                Signal.emit('cam_shake')
+                self.dead = true
             end
         end,
         endCollide = function(data)

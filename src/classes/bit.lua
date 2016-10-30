@@ -22,6 +22,8 @@ function Bit:init(world, planets, owner, x, y)
         collide = function(data)
             if data.tag == 'Planet' then
                 self.owner = 0
+            elseif data.tag == 'Sun' then
+                self.dead = true
             elseif data.tag == 'Asteroid' then
                 data.object.dead = true
             elseif data.tag == 'Bit' then
@@ -35,8 +37,8 @@ function Bit:init(world, planets, owner, x, y)
     self.owner = owner and owner.id or 0
 
     self.trail = love.graphics.newParticleSystem(Bit.SPR_TRAIL)
-    self.trail:setParticleLifetime(0.5)
-    self.trail:setColors(255, 255, 255, 255, 255, 255, 255, 0)
+    self.trail:setParticleLifetime(1)
+    self.trail:setColors(255, 255, 255, 255, 255, 255, 255, 32, 255, 255, 255, 0)
     self.trail:setSizes(Bit.RADIUS / 8, 0)
 end
 
