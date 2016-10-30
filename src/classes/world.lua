@@ -125,7 +125,7 @@ function World:generatePlanets()
         if i == joysticks + 1 then
             planet = Sun(self.physicsWorld, v.x, v.y, fakePlanets[i].radius / (World.PLANET_RADIUS_SHRINK_FACTOR / 1.5), false)
         else
-            planet = Planet(self.physicsWorld, v.x, v.y, fakePlanets[i].radius / World.PLANET_RADIUS_SHRINK_FACTOR, false)
+            planet = Planet(self.physicsWorld, v.x, v.y, fakePlanets[i].radius / World.PLANET_RADIUS_SHRINK_FACTOR,  (i <= joysticks))
         end
 
         table.insert(self.planets, planet)
