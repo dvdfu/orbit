@@ -8,6 +8,11 @@ Const.colors = {
     [4] = function() return 255, 255, 128, 255 end,
 }
 
+Const.fonts = {
+    titleFont = love.graphics.newFont('res/fonts/babyblue.ttf', 36),
+    bodyFont = love.graphics.newFont('res/fonts/babyblue.ttf', 16)
+}
+
 Const.weapons = {
     pistol = {
         fireRate = 0.25,
