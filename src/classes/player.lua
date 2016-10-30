@@ -17,6 +17,7 @@ function Player:init(id, world, level, planet, planets, angle)
 
     self.id = id
     self.planet = planet
+    self.groundPlanet = nil
     self.weapon = Weapon(level, self, Const.weapons.pistol)
     self.level = level
     self.points = 0
@@ -35,9 +36,15 @@ function Player:init(id, world, level, planet, planets, angle)
                 else
                     self.points = self.points + 1
                 end
+            elseif data.tag == 'Planet' then
+                self.groundPlanet = data.object
             end
         end,
-        endCollide = function(data) end
+        endCollide = function(data)
+            if data.tag == 'Planet' and data.object == self.groundPlanet then
+                self.groundPlanet = nil
+            end
+        end
     })
 
     self.joystick = love.joystick.getJoysticks()[id]
@@ -46,7 +53,23 @@ end
 function Player:update(dt)
     local ls = Vector(self.joystick:getGamepadAxis('leftx'), self.joystick:getGamepadAxis('lefty'))
     if ls:len() > 0.25 then
-        self.body:applyForce((ls:normalized() * Player.MOVE_FORCE):unpack())
+        if self.groundPlanet ~= nil then
+            local pp = Vector(self.pos.x - self.groundPlanet.pos.x, self.pos.y - self.groundPlanet.pos.y):normalized()
+            local angle = pp:angleTo(ls)
+            if angle < 0 then angle = angle + math.pi * 2 end
+
+            if pp * ls < 0 then
+                if angle < math.pi then
+                    pp = -pp
+                end
+
+                self.body:applyLinearImpulse((pp:perpendicular():normalized() * 10):unpack())
+            else
+                self.body:applyLinearImpulse((ls:normalized() * 10):unpack())
+            end
+        else
+            self.body:applyLinearImpulse((ls:normalized() * 10):unpack())
+        end
     end
 
     local rs = Vector(self.joystick:getGamepadAxis('righty'), self.joystick:getGamepadAxis('rightx'))
