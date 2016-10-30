@@ -231,9 +231,9 @@ function World:update(dt)
                 end
             elseif object.fixture:getUserData().tag == 'Player' then
                 table.remove(self.players, object.id)
-                if #self.players == 1 then
+                if #self.players <= 1 then
                     Timer.after(1, function()
-                        Signal.emit('restart_level')
+                        Signal.emit('new_round')
                     end)
                 end
             end
