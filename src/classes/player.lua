@@ -11,7 +11,9 @@ local Player = Class {
     LAUNCH_FORCE = 300,
     THRUST_FORCE = 200,
     SPRITE = love.graphics.newImage('res/rocket.png'),
-    SPR_TRAIL = love.graphics.newImage('res/circle.png')
+    SPR_TRAIL = love.graphics.newImage('res/circle.png'),
+    DEATH_SOUND = love.audio.newSource("sfx/player_explode.wav", "static"),
+    PICKUP_BIT_SOUND = love.audio.newSource("sfx/pickup_bit.wav", "static")
 }
 Player:include(Movable)
 
@@ -36,14 +38,17 @@ function Player:init(id, world, level, planet, planets, angle)
             if data.tag == 'Bit' then
                 data.object.dead = true
                 if data.object.owner > 0 and data.object.owner ~= self.id then
+                    Player.DEATH_SOUND:play()
                     Signal.emit('cam_shake')
                     self.dead = true
                 else
+                    Player.PICKUP_BIT_SOUND:play()
                     self.points = self.points + 1
                 end
             elseif data.tag == 'Planet' then
                 self.groundPlanet = data.object
             elseif data.tag == 'Sun' then
+                Player.DEATH_SOUND:play()
                 Signal.emit('cam_shake')
                 self.dead = true
             end

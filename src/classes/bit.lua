@@ -6,6 +6,7 @@ local Movable = require 'src.mixins.movable'
 local Bit = Class {
     RADIUS = 8,
     SPR_TRAIL = love.graphics.newImage('res/circle.png'),
+    HIT_SOUND = love.audio.newSource("sfx/hit_planet.wav", "static")
 }
 Bit:include(Movable)
 
@@ -21,12 +22,27 @@ function Bit:init(world, planets, owner, x, y)
         tag = 'Bit',
         collide = function(data)
             if data.tag == 'Planet' then
+                if self.owner ~= 0 then
+                  Bit.HIT_SOUND:play()
+                end
+                self.owner = 0
+            elseif data.tag == 'Moon' then
+                if self.owner ~= 0 then
+                  Bit.HIT_SOUND:play()
+                end
                 self.owner = 0
             elseif data.tag == 'Sun' then
+                Bit.HIT_SOUND:play()
                 self.dead = true
             elseif data.tag == 'Asteroid' then
+                if self.owner ~= 0 then
+                  Bit.HIT_SOUND:play()
+                end
                 data.object.dead = true
             elseif data.tag == 'Bit' then
+                if self.owner ~= 0 then
+                  Bit.HIT_SOUND:play()
+                end
                 self.owner = 0
                 data.object.owner = 0
             end
