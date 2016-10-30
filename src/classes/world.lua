@@ -23,10 +23,10 @@ local World = Class {
         #define iterations 17
         #define formuparam 0.53
 
-        #define volsteps 10
+        #define volsteps 2
         #define stepsize 0.1
 
-        #define zoom   0.800
+        uniform float zoom;
         #define tile   1
         #define speed  0.010
 
@@ -231,6 +231,11 @@ function World:update(dt)
                 end
             elseif object.fixture:getUserData().tag == 'Player' then
                 table.remove(self.players, object.id)
+                if #self.players <= 1 then
+                    Timer.after(1, function()
+                        Signal.emit('new_round')
+                    end)
+                end
             end
             object.body:destroy()
             table.remove(self.objects, key)
@@ -239,10 +244,10 @@ function World:update(dt)
         end
     end
 
-    self:handleCamera()
+    self:handleCamera(dt)
 end
 
-function World:handleCamera()
+function World:handleCamera(dt)
     self.cameraPre = self.camera.pos
 
     local cameraVec = Vector()
@@ -269,10 +274,11 @@ function World:draw()
         love.graphics.getHeight()
     })
     World.SPACE_SHADER:send('iMouse', {
-        self.camera.pos.x / 100,
-        self.camera.pos.y / 100
+        -self.camera.pos.x / 100,
+        -self.camera.pos.y / 100
     })
     World.SPACE_SHADER:send('iGlobalTime', 0)
+    World.SPACE_SHADER:send('zoom', 1 / self.camera.zoom)
     love.graphics.setShader(World.SPACE_SHADER)
     love.graphics.rectangle('fill', 0, 0, love.graphics.getDimensions())
     love.graphics.setShader()

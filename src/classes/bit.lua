@@ -1,11 +1,11 @@
 local Class = require 'modules.hump.class'
+local Signal = require 'modules.hump.signal'
 local Vector = require 'modules.hump.vector'
 local Movable = require 'src.mixins.movable'
 
 local Bit = Class {
     RADIUS = 8,
-    density = 1,
-    sprTrail = love.graphics.newImage('res/circle.png'),
+    SPR_TRAIL = love.graphics.newImage('res/circle.png'),
 }
 Bit:include(Movable)
 
@@ -14,7 +14,7 @@ function Bit:init(world, planets, owner, x, y)
     self.body:setBullet(true)
 
     self.body:setFixedRotation(true)
-    self.fixture:setRestitution(0.8)
+    self.fixture:setRestitution(0.9)
     self.fixture:setUserData({
         object = self,
         tag = 'Bit',
@@ -33,9 +33,10 @@ function Bit:init(world, planets, owner, x, y)
 
     self.owner = owner and owner.id or 0
 
-    self.trail = love.graphics.newParticleSystem(Bit.sprTrail)
-    self.trail:setParticleLifetime(0.4)
-    self.trail:setSizes(1, 0)
+    self.trail = love.graphics.newParticleSystem(Bit.SPR_TRAIL)
+    self.trail:setParticleLifetime(0.5)
+    self.trail:setColors(255, 255, 255, 255, 255, 255, 255, 0)
+    self.trail:setSizes(Bit.RADIUS / 8, 0)
 end
 
 function Bit:update(dt)
@@ -47,16 +48,11 @@ function Bit:update(dt)
 end
 
 function Bit:draw()
-    if self.owner > 0 then
-        love.graphics.setColor(Const.colors[self.owner]())
-        Movable.draw(self)
-        love.graphics.draw(self.trail)
-        love.graphics.setColor(255, 255, 255)
-    else
-        Movable.draw(self)
-        love.graphics.draw(self.trail)
-    end
-
+    love.graphics.setBlendMode('add')
+    love.graphics.setColor(Const.colors[self.owner]())
+    love.graphics.draw(self.trail)
+    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.setBlendMode('alpha')
 end
 
 return Bit

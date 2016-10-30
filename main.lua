@@ -1,13 +1,15 @@
 RNG = love.math.newRandomGenerator(love.timer.getTime())
 
+local Signal = require 'modules.hump.signal'
+Timer = require 'modules.hump.timer'
 GameState = require "modules.hump.gamestate"
 Const = require 'src.const'
 Joysticks = require 'src.joysticks'
 Keyboard = require 'src.keyboard'
 Round = require 'src.round'
--- local World = require 'src.classes.world'
---
--- local world
+
+MAX_ROUNDS = 5
+local roundNum
 local round
 local menu = {}
 local game = {}
@@ -15,23 +17,19 @@ local pause = {}
 local over = {}
 
 function love.load()
+    roundNum = 1
+    Signal.register('new_round', function()
+        roundNum = roundNum + 1
+        if roundNum <= MAX_ROUNDS then
+          round = Round(roundNum)
+        else
+          GameState.switch(over)
+        end
+    end)
     Joysticks.init()
     GameState.registerEvents()
     GameState.switch(menu)
-    round = Round()
-    -- world = World()
-end
-
--- function love.update(dt)
-    -- world:update(dt)
-    -- Keyboard.update()
--- end
-
-function love.draw()
-    -- world:draw()
-end
-
-function love.keypressed(key, scancode, isrepeat)
+    round = Round(roundNum)
 end
 
 function menu:enter(from)
@@ -62,6 +60,8 @@ end
 function game:keypressed(key, code)
     if key == 'escape' then
       GameState.switch(pause)
+    elseif key == 'r' then
+      Signal.emit('new_round')
     end
 end
 
@@ -76,6 +76,8 @@ end
 function pause:keypressed(key, code)
     if key == 'escape' then
       GameState.switch(game)
+    elseif key == 'q' then
+      love.event.quit()
     end
 end
 
@@ -83,7 +85,8 @@ function pause:update(dt)
 end
 
 function pause:draw()
-    love.graphics.print("PAUSE Press ESCAPE to Resume", love.graphics.getWidth()/2, love.graphics.getHeight()/2);
+    love.graphics.print("PAUSE Press ESCAPE to RESUME", love.graphics.getWidth()/2, love.graphics.getHeight()/2);
+    love.graphics.print("PAUSE Press Q to QUIT", love.graphics.getWidth()/2, love.graphics.getHeight()/2 + 50);
 end
 
 function over:enter(from)
@@ -92,7 +95,8 @@ end
 
 function over:keypressed(key, code)
     if key == 'return' then
-      round = Round()
+      roundNum = 1
+      round = Round(roundNum)
       GameState.switch(game)
     end
 end

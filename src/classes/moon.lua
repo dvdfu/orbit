@@ -3,7 +3,8 @@ local Body = require 'src.mixins.body'
 local Vector  = require 'modules.hump.vector'
 
 local Moon = Class {
-  density = 1
+    density = 1,
+    SPRITE = love.graphics.newImage('res/sand_planet.png')
 }
 Moon:include(Body)
 
@@ -35,7 +36,7 @@ function Moon:update(dt)
 end
 
 function Moon:draw()
-  love.graphics.circle('line', self.pos.x, self.pos.y, self.radius)
+    love.graphics.draw(Moon.SPRITE, self.pos.x, self.pos.y, 0, self.radius / 32, self.radius / 32, 32, 32)
 end
 
 return Moon

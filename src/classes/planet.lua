@@ -4,7 +4,7 @@ local Body = require 'src.mixins.body'
 local Moon = require 'src.classes.moon'
 
 local Planet = Class {
-    density = 1
+    SPR_GRASS = love.graphics.newImage('res/grass_planet.png')
 }
 Planet:include(Body)
 
@@ -26,7 +26,8 @@ function Planet:update(dt)
 end
 
 function Planet:draw(dt)
-  Body.draw(self)
+  -- Body.draw(self)
+  love.graphics.draw(Planet.SPR_GRASS, self.pos.x, self.pos.y, 0, self.radius / 32, self.radius / 32, 32, 32)
   self.moon:draw()
 end
 
