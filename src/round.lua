@@ -3,9 +3,7 @@ local World = require 'src.classes.world'
 local Keyboard = require 'src.keyboard'
 local Timer = require 'modules.hump.timer'
 
-local Round = Class {
-
-}
+local Round = Class {}
 
 local world
 
@@ -22,6 +20,8 @@ end
 
 function Round:draw()
     world:draw()
+
+    love.graphics.setFont(Const.fonts.titleFont)
     love.graphics.print("Round: ".. self.roundNum, 10, 10);
 end
 
