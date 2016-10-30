@@ -11,9 +11,6 @@ local keyboard = setmetatable({}, {
 })
 
 function love.keypressed(key)
-    if(key == 'escape') then
-      love.event.quit()
-    end
     keyboard[key] = keyboard[key]
     keyboard[key].pressed = true
 end
