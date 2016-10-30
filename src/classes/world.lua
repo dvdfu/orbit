@@ -186,7 +186,7 @@ function World:update(dt)
                 table.remove(self.players, object.id)
                 if #self.players <= 1 then
                     Timer.after(1, function()
-                        Signal.emit('new_round')
+                        Signal.emit('new_round', self.players)
                     end)
                 end
             end

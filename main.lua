@@ -18,10 +18,15 @@ local menu = {}
 local game = {}
 local pause = {}
 local over = {}
+local wins = {}
 
-function drawCenteredTextAtHeight(msg, y)
+function drawCenteredTextAtHeight(msg, y, dontSetColor)
     love.graphics.push()
-    love.graphics.setColor(255, 255, 255)
+
+    if dontSetColor == nil then
+        love.graphics.setColor(255, 255, 255)
+    end
+
     love.graphics.printf(msg, 0, y, love.graphics.getWidth(), 'center')
     love.graphics.pop()
 end
@@ -35,13 +40,22 @@ end
 
 function love.load()
     roundNum = 1
-    Signal.register('new_round', function()
+    Signal.register('new_round', function(players)
         roundNum = roundNum + 1
-        if roundNum <= MAX_ROUNDS then
-          round = Round(roundNum)
-        else
-          GameState.switch(over)
+
+        for _, player in pairs(players) do
+            if wins[player.id] then
+                wins[player.id] = wins[player.id] + 1
+            else
+                wins[player.id] = 1
+            end
+
+            if wins[player.id] == 3 then
+                GameState.switch(over)
+            end
         end
+
+        round = Round(roundNum)
     end)
     Joysticks.init()
     GameState.registerEvents()
@@ -136,5 +150,17 @@ function over:update(dt)
 end
 
 function over:draw()
-    love.graphics.print("OVER Press Enter to Start", love.graphics.getWidth()/2, love.graphics.getHeight()/2);
+    local winner
+    for id, v in pairs(wins) do
+        if v == 3 then
+            winner = id
+            break
+        end
+    end
+
+    drawCenteredTextAtHeight('Game over', 10)
+
+    local r, g, b, a = Const.colors[winner]()
+    love.graphics.setColor(r, g, b, a)
+    drawCenteredTextAtHeight('Player ' .. winner .. ' wins!', love.graphics.getHeight() / 2, false)
 end
