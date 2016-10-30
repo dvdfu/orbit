@@ -17,7 +17,8 @@ local World = Class {
     PLANET_STARTING_POSITION = { low = -10, high = 10 },
     PLANET_RADIUS = { low = 150, high = 250 },
     PLANET_RADIUS_SHRINK_FACTOR = 3.5,
-    SPACE_SHADER = love.graphics.newShader(Const.spaceShader)
+    SPACE_SHADER = love.graphics.newShader(Const.spaceShader),
+    SPR_AMMO = love.graphics.newImage('res/ammo_bar.png')
 }
 
 local function getInRange(range)
@@ -242,11 +243,17 @@ function World:draw()
 
     self.camera:draw(function()
         -- love.graphics.circle('line', 0, 0, self.radius)
-
         for _, object in pairs(self.objects) do
             object:draw()
         end
     end)
+
+    for _, player in pairs(self.players) do
+        local cp = self.camera:worldToCamera(player.pos)
+        for i = 1, player.points do
+            love.graphics.draw(World.SPR_AMMO, cp.x + i * 6, cp.y - 25)
+        end
+    end
 end
 
 return World

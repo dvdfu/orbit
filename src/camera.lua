@@ -55,6 +55,10 @@ function Camera:getPosition()
     return (self.pos - self.shakeVec):unpack()
 end
 
+function Camera:worldToCamera(vec)
+    return (vec - self.pos) * self.zoom + Vector(love.graphics.getDimensions()) / 2
+end
+
 function Camera:draw(callback)
     local halfScreen = Vector(love.graphics.getDimensions()) / 2
     local translation = halfScreen / self.zoom - self.pos + self.shakeVec
