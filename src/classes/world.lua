@@ -253,6 +253,11 @@ function World:draw()
         for i = 1, player.points do
             love.graphics.draw(World.SPR_AMMO, cp.x + i * 6, cp.y - 25)
         end
+        if player.boost == Player.BOOST_COOLDOWN then
+            love.graphics.setColor(Const.colors[player.id]())
+            love.graphics.rectangle('fill', cp.x, cp.y - 25, 5, 11)
+            love.graphics.setColor(255, 255, 255)
+        end
     end
 end
 
