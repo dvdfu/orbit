@@ -28,7 +28,11 @@ function Player:init(id, world, level, planet, planets, angle)
         collide = function(data)
             if data.tag == 'Bit' then
                 data.object.dead = true
-                self.points = self.points + 1
+                if data.object.owner and data.object.owner ~= self then
+                    self.dead = true
+                else
+                    self.points = self.points + 1
+                end
             end
         end,
         endCollide = function(data) end

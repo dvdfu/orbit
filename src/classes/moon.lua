@@ -12,7 +12,8 @@ function Moon:init(world, planet, x, y, radius)
     self.fixture:setFriction(1)
 
     self.planet = planet;
-    self.angle = 0;
+    self.angle = RNG:random(0, math.pi * 2)
+    self.speed = RNG:random(0.5, 1.5)
 
     self.fixture:setUserData({
         object = self,
@@ -24,7 +25,7 @@ end
 
 function Moon:update(dt)
   Body.update(self, dt)
-  self.angle = self.angle + dt/2;
+  self.angle = self.angle + dt/2 * self.speed;
   if self.angle >= 2*math.pi then
     self.angle = 0;
   end

@@ -10,7 +10,7 @@ Planet:include(Body)
 
 function Planet:init(world, x, y, radius)
     Body.init(self, world, x, y, radius)
-    self.moon = Moon(world, self, x - radius*2, y, RNG:random(10,20))
+    self.moon = Moon(world, self, x - radius*2, y, RNG:random(20, 40))
     self.fixture:setFriction(1)
 
     self.fixture:setUserData({

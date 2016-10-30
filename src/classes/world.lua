@@ -9,7 +9,7 @@ local Body     = require 'src.mixins.body'
 local Asteroid = require 'src.classes.asteroid'
 
 local World = Class {
-    NUM_PLANETS = love.joystick.getJoystickCount(),
+    NUM_PLANETS = 2,
 
     -- Generation Parameters
     PLANET_STARTING_POSITION = { low = -10, high = 10 },
@@ -162,11 +162,12 @@ function World:generate()
 end
 
 function World:generatePlanets()
+    local joysticks = love.joystick.getJoystickCount()
     local fakePlanets = {}
     local genWorld = love.physics.newWorld(0, 0, true)
     genWorld:setCallbacks(beginContact, endContact, preSolve, postSolve)
 
-    for i = 1, World.NUM_PLANETS do
+    for i = 1, joysticks + World.NUM_PLANETS do
         local x = getInRange(World.PLANET_STARTING_POSITION);
         local y = getInRange(World.PLANET_STARTING_POSITION)
         local radius = getInRange(World.PLANET_RADIUS)
@@ -189,7 +190,7 @@ function World:generatePlanets()
 
     self.radius = 0
 
-    for i = 1, World.NUM_PLANETS do
+    for i = 1, joysticks + World.NUM_PLANETS do
         local v = Vector(fakePlanets[i].body:getX(), fakePlanets[i].body:getY())
         local planet = Planet(self.physicsWorld, v.x, v.y, fakePlanets[i].radius / World.PLANET_RADIUS_SHRINK_FACTOR, false)
 
@@ -200,10 +201,14 @@ function World:generatePlanets()
             self.radius = v:len() + fakePlanets[i].radius
         end
 
+        if i <= joysticks then
+            local player = Player(i, self.physicsWorld, self, planet, self.planets, RNG:random(2 * math.pi))
+            table.insert(self.objects, player)
+            table.insert(self.players, player)
+        end
+    end
 
-        local player = Player(i, self.physicsWorld, self, planet, self.planets, RNG:random(2 * math.pi))
-        table.insert(self.objects, player)
-        table.insert(self.players, player)
+    for i = joysticks + 1, joysticks + World.NUM_PLANETS do
     end
 
     genWorld:destroy()
@@ -218,11 +223,13 @@ function World:update(dt)
 
     for key, object in pairs(self.objects) do
         if object:isDead() then
-            if(object.fixture:getUserData().tag == 'Asteroid') then
-              for i = 1, 5 do
-                  local bit = Bit(self.physicsWorld, self.planets, nil, object.body:getX(), object.body:getY())
-                  table.insert(self.objects, bit)
-              end
+            if object.fixture:getUserData().tag == 'Asteroid' then
+                for i = 1, 3 do
+                    local bit = Bit(self.physicsWorld, self.planets, nil, object.body:getX(), object.body:getY())
+                    table.insert(self.objects, bit)
+                end
+            elseif object.fixture:getUserData().tag == 'Player' then
+                table.remove(self.players, object.id)
             end
             object.body:destroy()
             table.remove(self.objects, key)

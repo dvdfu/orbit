@@ -21,6 +21,11 @@ function Bit:init(world, planets, owner, x, y)
         collide = function(data)
             if data.tag == 'Planet' then
                 self.owner = nil
+            elseif data.tag == 'Asteroid' then
+                data.object.dead = true
+            elseif data.tag == 'Bit' then
+                self.owner = nil
+                data.object.owner = nil
             end
         end,
         endCollide = function(data) end
