@@ -223,7 +223,7 @@ function World:handleCamera(dt)
 
     self.camera:follow(cameraVec)
 
-    local zoom = math.min(1, 300 / (50 + playerDist))
+    local zoom = math.min(1, 500 / (50 + playerDist))
     self.camera:zoomTo(zoom)
     self.camera:update(dt)
 end

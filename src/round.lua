@@ -26,7 +26,7 @@ function Round:init(roundNum, winningPlayer)
 
     self.startTime = 0
     self.winningPlayer = winningPlayer
-    self.num = math.random(1, #Const.quotes)
+    self.num = RNG:random(1, #Const.quotes)
 end
 
 function Round:update(dt)

@@ -14,9 +14,16 @@ Const.fonts = {
 }
 
 Const.quotes = {
-    [0] = 'asdfasdf',
-    [1] = 'sdafdsf',
-    [2] = '324328'
+    [0] = "Rocket fuel can't melt steel games",
+    [1] = "It's a small world",
+    [2] = "It's only game.",
+    [3] = "Breaking friendships since 1995",
+    [4] = "Brrap brrap pew pew",
+    [5] = "In the end, the sun will kill us all",
+    [6] = "It's just like in real life",
+    [7] = "Have you ever had a dream?",
+    [8] = "Don't drink and drive",
+    [9] = "Smile!",
 }
 
 Const.weapons = {
