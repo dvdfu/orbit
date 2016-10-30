@@ -12,6 +12,7 @@ local Player = Class {
     THRUST_FORCE = 200,
     SPRITE = love.graphics.newImage('res/rocket.png'),
     SPR_TRAIL = love.graphics.newImage('res/circle.png'),
+    SPR_CROWN = love.graphics.newImage('res/crown.png'),
     DEATH_SOUND = love.audio.newSource("sfx/player_explode.wav", "static"),
     PICKUP_BIT_SOUND = love.audio.newSource("sfx/pickup_bit.wav", "static")
 }
@@ -136,6 +137,8 @@ function Player:draw()
     -- love.graphics.print(self.points, self.pos.x - 4, self.pos.y - 4)
     love.graphics.draw(Player.SPRITE, self.pos.x, self.pos.y, self.direction, 1, 1, 12, 12)
     love.graphics.setColor(255, 255, 255)
+
+    -- love.graphics.draw(Player.SPR_CROWN, self.pos.x + 10 * math.cos(self.direction), self.pos.y + 10 * math.sin(self.direction), self.direction, 1, 1, 0, 12)
 end
 
 return Player

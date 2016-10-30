@@ -8,6 +8,7 @@ local Player   = require 'src.classes.player'
 local Sun      = require 'src.classes.sun'
 local Body     = require 'src.mixins.body'
 local Asteroid = require 'src.classes.asteroid'
+local Debris   = require 'src.classes.debris'
 
 local World = Class {
     NUM_PLANETS = 4,
@@ -169,8 +170,16 @@ function World:update(dt)
             elseif object.fixture:getUserData().tag == 'Player' then
                 for i = 1, object.points do
                     local bit = Bit(self.physicsWorld, self.planets, nil, object.body:getX(), object.body:getY())
+                    bit.body:applyLinearImpulse(RNG:random(-100, 100), RNG:random(-100, 100))
                     table.insert(self.objects, bit)
                 end
+
+                for i = 1, 6 do
+                    local debris = Debris(self.physicsWorld, self.planets, object.id, object.body:getX(), object.body:getY())
+                    debris.body:applyLinearImpulse(RNG:random(-10, 10), RNG:random(-10, 10))
+                    table.insert(self.objects, debris)
+                end
+
                 table.remove(self.players, object.id)
                 if #self.players <= 1 then
                     Timer.after(1, function()
