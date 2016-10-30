@@ -32,6 +32,7 @@ function Player:init(id, world, level, planet, planets, angle)
     self.points = 0
     self.direction = 0
     self.boost = 5;
+    self.roundWins = 0
 
     self.body:setLinearDamping(4)
 
