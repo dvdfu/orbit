@@ -8,6 +8,7 @@ local Player   = require 'src.classes.player'
 local Sun      = require 'src.classes.sun'
 local Body     = require 'src.mixins.body'
 local Asteroid = require 'src.classes.asteroid'
+local Debris   = require 'src.classes.debris'
 
 local World = Class {
     NUM_PLANETS = 4,
@@ -62,7 +63,7 @@ local function contactFilter(a, b)
     return true
 end
 
-function World:init()
+function World:init(isMenu)
     Signal.register('cam_shake', function(shake)
         self.camera:shake(shake)
     end)
@@ -77,24 +78,17 @@ function World:init()
     self.objects = {}
     self.asteroids = {}
 
-    self:generate()
+    self:generate(isMenu)
 end
 
-function World:generate()
-    self:generatePlanets()
-
-    for i = 1, 10 do
-        local asteroid = Asteroid(self.physicsWorld, self.planets,
-            RNG:random(1, 2) * self.radius * 2 * math.cos(RNG:random(0, math.pi * 2)),
-            RNG:random(1, 2) * self.radius * 2 * math.sin(RNG:random(0, math.pi * 2)),
-            RNG:random(15, 30))
-        table.insert(self.objects, asteroid)
-        table.insert(self.asteroids, asteroid)
+function World:generate(isMenu)
+    local joysticks
+    if isMenu then
+        joysticks = 0
+    else
+        joysticks = love.joystick.getJoystickCount()
     end
-end
 
-function World:generatePlanets()
-    local joysticks = love.joystick.getJoystickCount()
     local fakePlanets = {}
     local genWorld = love.physics.newWorld(0, 0, true)
     genWorld:setCallbacks(beginContact, endContact, preSolve, postSolve)
@@ -149,6 +143,15 @@ function World:generatePlanets()
     end
 
     genWorld:destroy()
+
+    for i = 1, 10 do
+        local asteroid = Asteroid(self.physicsWorld, self.planets,
+            RNG:random(1, 2) * self.radius * 2 * math.cos(RNG:random(0, math.pi * 2)),
+            RNG:random(1, 2) * self.radius * 2 * math.sin(RNG:random(0, math.pi * 2)),
+            RNG:random(15, 30))
+        table.insert(self.objects, asteroid)
+        table.insert(self.asteroids, asteroid)
+    end
 end
 
 function World:addObject(object)
@@ -169,8 +172,16 @@ function World:update(dt)
             elseif object.fixture:getUserData().tag == 'Player' then
                 for i = 1, object.points do
                     local bit = Bit(self.physicsWorld, self.planets, nil, object.body:getX(), object.body:getY())
+                    bit.body:applyLinearImpulse(RNG:random(-100, 100), RNG:random(-100, 100))
                     table.insert(self.objects, bit)
                 end
+
+                for i = 1, 6 do
+                    local debris = Debris(self.physicsWorld, self.planets, object.id, object.body:getX(), object.body:getY())
+                    debris.body:applyLinearImpulse(RNG:random(-10, 10), RNG:random(-10, 10))
+                    table.insert(self.objects, debris)
+                end
+
                 table.remove(self.players, object.id)
                 if #self.players <= 1 then
                     Timer.after(1, function()
