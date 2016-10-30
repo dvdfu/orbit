@@ -18,6 +18,7 @@ function love.load()
     Joysticks.init()
     GameState.registerEvents()
     GameState.switch(menu)
+    round = Round()
     -- world = World()
 end
 
@@ -31,9 +32,6 @@ function love.draw()
 end
 
 function love.keypressed(key, scancode, isrepeat)
-    if key == 'enter' then
-      -- if(Gamestate.current())
-    end
 end
 
 function menu:enter(from)
@@ -44,14 +42,13 @@ function menu:update(dt)
 end
 
 function menu:keypressed(key,code)
-    if key == 'enter' then
+    if key == 'return' then
       GameState.switch(game)
     end
 end
 
 function menu:draw()
-    love.graphics.print(GameState.current(),love.graphics.getWidth()/2, love.graphics.getHeight()/2)
-    -- love.graphics.print("Press Enter to Start", love.graphics.getWidth()/2, love.graphics.getHeight()/2);
+    love.graphics.print("Press Enter to Start", love.graphics.getWidth()/2, love.graphics.getHeight()/2);
 end
 
 function game:enter(from)
@@ -60,9 +57,6 @@ end
 
 function game:update(dt)
     round:update(dt)
-    if key == 'enter' then
-      GameState.switch(game)
-    end
 end
 
 function game:keypressed(key, code)
@@ -73,7 +67,6 @@ end
 
 function game:draw()
     round:draw()
-    --love.graphics.print("GAME Press Enter to Start", love.graphics.getWidth()/2, love.graphics.getHeight()/2);
 end
 
 function pause:enter(from)
@@ -97,8 +90,8 @@ function over:enter(from)
     self.from = from;
 end
 
-function pause:keypressed(key, code)
-    if key == 'enter' then
+function over:keypressed(key, code)
+    if key == 'return' then
       round = Round()
       GameState.switch(game)
     end

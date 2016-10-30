@@ -24,3 +24,5 @@ end
 function Round:draw()
     world:draw()
 end
+
+return Round
