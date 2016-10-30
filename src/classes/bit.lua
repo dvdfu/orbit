@@ -6,6 +6,7 @@ local Movable = require 'src.mixins.movable'
 local Bit = Class {
     RADIUS = 8,
     SPR_TRAIL = love.graphics.newImage('res/circle.png'),
+    SPRITE = love.graphics.newImage('res/bit.png'),
 }
 Bit:include(Movable)
 
@@ -39,7 +40,7 @@ function Bit:init(world, planets, owner, x, y)
     self.trail = love.graphics.newParticleSystem(Bit.SPR_TRAIL)
     self.trail:setParticleLifetime(1)
     self.trail:setColors(255, 255, 255, 255, 255, 255, 255, 32, 255, 255, 255, 0)
-    self.trail:setSizes(Bit.RADIUS / 8, 0)
+    self.trail:setSizes(Bit.RADIUS / 6, 0)
 end
 
 function Bit:update(dt)
@@ -51,11 +52,14 @@ function Bit:update(dt)
 end
 
 function Bit:draw()
-    love.graphics.setBlendMode('add')
-    love.graphics.setColor(Const.colors[self.owner]())
-    love.graphics.draw(self.trail)
-    love.graphics.setColor(255, 255, 255, 255)
-    love.graphics.setBlendMode('alpha')
+    if self.owner > 0 then
+        love.graphics.setBlendMode('add')
+        love.graphics.setColor(Const.colors[self.owner]())
+        love.graphics.draw(self.trail)
+        love.graphics.setColor(255, 255, 255, 255)
+        love.graphics.setBlendMode('alpha')
+    end
+    love.graphics.draw(Bit.SPRITE, self.pos.x, self.pos.y, self.body:getAngle(), 1, 1, 8, 8)
 end
 
 return Bit

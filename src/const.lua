@@ -19,6 +19,16 @@ Const.weapons = {
     }
 }
 
+Const.gradientShader = [[
+    uniform vec2 point;
+
+    vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
+        vec4 pixel = Texel(texture, texture_coords);
+        // pixel.rgb *= sqrt(texture_coords.y);
+        return pixel;
+    }
+]]
+
 Const.spaceShader = [[
     uniform vec2 iResolution;
     uniform float iGlobalTime;

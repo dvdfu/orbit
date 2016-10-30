@@ -8,7 +8,8 @@ local Planet = Class {
         [1] = love.graphics.newImage('res/water_planet.png'),
         [2] = love.graphics.newImage('res/brown_planet.png'),
         [3] = love.graphics.newImage('res/pink_planet.png'),
-    }
+    },
+    SHADER = love.graphics.newShader(Const.gradientShader)
 }
 Planet:include(Body)
 
@@ -33,9 +34,14 @@ function Planet:update(dt)
 end
 
 function Planet:draw(dt)
-  -- Body.draw(self)
-  love.graphics.draw(Planet.SPRITES[self.sprite], self.pos.x, self.pos.y, self.rotation, self.radius / 32, self.radius / 32, 32, 32)
-  self.moon:draw()
+    -- Planet.SHADER:send('point', {
+    --     1,
+    --     0
+    -- })
+    love.graphics.setShader(Planet.SHADER)
+    love.graphics.draw(Planet.SPRITES[self.sprite], self.pos.x, self.pos.y, 0, self.radius / 32, self.radius / 32, 32, 32)
+    love.graphics.setShader()
+    self.moon:draw()
 end
 
 return Planet

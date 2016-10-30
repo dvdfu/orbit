@@ -99,7 +99,7 @@ function Player:update(dt)
         if self.groundPlanet then
             local pp = (self.pos - self.groundPlanet.pos):normalized()
             self.body:applyLinearImpulse((pp * Player.LAUNCH_FORCE):unpack())
-            self.groundPlanet =
+            self.groundPlanet = nil
             self.trail:emit(32)
         else
             self.trail:emit(1)
