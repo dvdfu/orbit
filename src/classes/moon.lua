@@ -4,7 +4,7 @@ local Vector  = require 'modules.hump.vector'
 
 local Moon = Class {
     density = 1,
-    SPRITE = love.graphics.newImage('res/sand_planet.png')
+    SPRITE = love.graphics.newImage('res/moon.png')
 }
 Moon:include(Body)
 
@@ -22,13 +22,15 @@ function Moon:init(world, planet, x, y, radius)
         collide = function(data) end,
         endCollide = function(data) end
     })
+
+    self.rotation = RNG:random(0, math.pi * 2)
 end
 
 function Moon:update(dt)
   Body.update(self, dt)
   self.angle = self.angle + dt/2 * self.speed;
   if self.angle >= 2*math.pi then
-    self.angle = 0;
+    self.angle = self.angle - 0;
   end
   self.body:setPosition(
       (self.radius+self.planet.radius + 50)*math.cos(self.angle) + self.planet.pos.x
@@ -36,7 +38,7 @@ function Moon:update(dt)
 end
 
 function Moon:draw()
-    love.graphics.draw(Moon.SPRITE, self.pos.x, self.pos.y, 0, self.radius / 32, self.radius / 32, 32, 32)
+    love.graphics.draw(Moon.SPRITE, self.pos.x, self.pos.y, self.rotation, self.radius / 16, self.radius / 16, 16, 16)
 end
 
 return Moon

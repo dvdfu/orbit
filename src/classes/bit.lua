@@ -13,8 +13,9 @@ function Bit:init(world, planets, owner, x, y)
     Movable.init(self, world, planets, x, y, Bit.RADIUS)
     self.body:setBullet(true)
 
-    self.body:setFixedRotation(true)
-    self.fixture:setRestitution(0.9)
+    self.body:setAngularDamping(3)
+    -- self.body:setFixedRotation(true)
+    -- self.fixture:setRestitution(0.7)
     self.fixture:setUserData({
         object = self,
         tag = 'Bit',

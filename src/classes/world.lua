@@ -284,7 +284,7 @@ function World:draw()
     love.graphics.setShader()
 
     self.camera:draw(function()
-        love.graphics.circle('line', 0, 0, self.radius)
+        -- love.graphics.circle('line', 0, 0, self.radius)
 
         for _, object in pairs(self.objects) do
             object:draw()
