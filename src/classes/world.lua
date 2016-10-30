@@ -191,9 +191,10 @@ function World:generatePlanets()
 
     self.radius = 0
 
-    for i = 1, joysticks + World.NUM_PLANETS do
+    for i = 1, joysticks do
         local v = Vector(fakePlanets[i].body:getX(), fakePlanets[i].body:getY())
-        local planet = Planet(self.physicsWorld, v.x, v.y, fakePlanets[i].radius / World.PLANET_RADIUS_SHRINK_FACTOR, false)
+        local hasMoon = i <= joysticks
+        local planet = Planet(self.physicsWorld, v.x, v.y, fakePlanets[i].radius / World.PLANET_RADIUS_SHRINK_FACTOR, hasMoon)
 
         table.insert(self.planets, planet)
         table.insert(self.objects, planet)
