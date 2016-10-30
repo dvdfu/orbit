@@ -56,7 +56,7 @@ function Player:init(id, world, level, planet, planets, angle)
     self.trail:setParticleLifetime(0.5, 1)
     self.trail:setColors(255, 255, 255, 255, 32, 32, 32, 255)
     self.trail:setSpread(math.pi * 2)
-    self.trail:setSizes(0.8, 0)
+    self.trail:setSizes(1, 0)
     self.trail:setSpeed(0, 30)
 
     self.joystick = love.joystick.getJoysticks()[id]

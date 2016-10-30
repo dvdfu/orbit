@@ -23,10 +23,10 @@ local World = Class {
         #define iterations 17
         #define formuparam 0.53
 
-        #define volsteps 10
+        #define volsteps 2
         #define stepsize 0.1
 
-        #define zoom   0.800
+        uniform float zoom;
         #define tile   1
         #define speed  0.010
 
@@ -278,9 +278,10 @@ function World:draw()
         -self.camera.pos.y / 100
     })
     World.SPACE_SHADER:send('iGlobalTime', 0)
-    -- love.graphics.setShader(World.SPACE_SHADER)
-    -- love.graphics.rectangle('fill', 0, 0, love.graphics.getDimensions())
-    -- love.graphics.setShader()
+    World.SPACE_SHADER:send('zoom', 1 / self.camera.zoom)
+    love.graphics.setShader(World.SPACE_SHADER)
+    love.graphics.rectangle('fill', 0, 0, love.graphics.getDimensions())
+    love.graphics.setShader()
 
     self.camera:draw(function()
         love.graphics.circle('line', 0, 0, self.radius)

@@ -27,3 +27,11 @@ end
 function love.draw()
     world:draw()
 end
+
+function love.keypressed(key)
+    if key == 'escape' then
+        love.event.quit()
+    elseif key == 'r' then
+        Signal.emit('restart_level')
+    end
+end
