@@ -35,7 +35,7 @@ function Moon:update(dt)
 end
 
 function Moon:draw()
-  love.graphics.circle('fill', self.pos.x, self.pos.y, self.radius)
+  love.graphics.circle('line', self.pos.x, self.pos.y, self.radius)
 end
 
 return Moon

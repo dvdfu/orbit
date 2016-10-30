@@ -20,18 +20,18 @@ function Bit:init(world, planets, owner, x, y)
         tag = 'Bit',
         collide = function(data)
             if data.tag == 'Planet' then
-                self.owner = nil
+                self.owner = 0
             elseif data.tag == 'Asteroid' then
                 data.object.dead = true
             elseif data.tag == 'Bit' then
-                self.owner = nil
-                data.object.owner = nil
+                self.owner = 0
+                data.object.owner = 0
             end
         end,
         endCollide = function(data) end
     })
 
-    self.owner = owner
+    self.owner = owner and owner.id or 0
 
     self.trail = love.graphics.newParticleSystem(Bit.sprTrail)
     self.trail:setParticleLifetime(0.4)
@@ -47,8 +47,8 @@ function Bit:update(dt)
 end
 
 function Bit:draw()
-    if self.owner then
-        love.graphics.setColor(Const.colors[self.owner.id]())
+    if self.owner > 0 then
+        love.graphics.setColor(Const.colors[self.owner]())
         Movable.draw(self)
         love.graphics.draw(self.trail)
         love.graphics.setColor(255, 255, 255)

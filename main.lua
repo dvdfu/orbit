@@ -21,3 +21,9 @@ end
 function love.draw()
     world:draw()
 end
+
+function love.keypressed(key, scancode, isrepeat)
+    if key == 'r' then
+        world = World()
+    end
+end

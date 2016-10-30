@@ -13,7 +13,7 @@ local World = Class {
 
     -- Generation Parameters
     PLANET_STARTING_POSITION = { low = -10, high = 10 },
-    PLANET_RADIUS = { low = 100, high = 200 },
+    PLANET_RADIUS = { low = 150, high = 250 },
     PLANET_RADIUS_SHRINK_FACTOR = 3,
     SPACE_SHADER = love.graphics.newShader([[
         uniform vec2 iResolution;
@@ -117,12 +117,12 @@ local function contactFilter(a, b)
     local aData = a:getUserData()
     local bData = b:getUserData()
 
-    if aData.tag == 'Bit' then
-        if bData.object == aData.object.owner then return false end
+    if aData.tag == 'Bit' and bData.tag == 'Player' then
+        if aData.object.owner == bData.object.id then return false end
     end
 
-    if bData.tag == 'Bit' then
-        if aData.object == bData.object.owner then return false end
+    if bData.tag == 'Bit' and aData.tag == 'Player' then
+        if bData.object.owner == aData.object.id then return false end
     end
 
     return true
@@ -151,10 +151,11 @@ function World:generate()
 
     for i = 1, 10 do
         local bit = Bit(self.physicsWorld, self.planets, nil, 0, 0)
+        bit.body:applyLinearImpulse(RNG:random(-100, 100), RNG:random(-100, 100))
         table.insert(self.objects, bit)
     end
 
-    for i = 1, 5 do
+    for i = 1, 1 do
         local asteroid = Asteroid(self.physicsWorld, self.planets, RNG:random(-self.radius, self.radius), RNG:random(-self.radius, self.radius), RNG:random(15, 30))
         table.insert(self.objects, asteroid)
         table.insert(self.asteroids, asteroid)
@@ -257,7 +258,7 @@ function World:handleCamera()
     cameraVec = cameraVec / #self.players
     self.camera:follow(cameraVec)
 
-    local zoom = math.min(1, 400 / (50 + playerDist))
+    local zoom = math.min(1, 300 / (50 + playerDist))
     self.camera:zoomTo(zoom)
     self.camera:update(dt)
 end
@@ -272,9 +273,9 @@ function World:draw()
         self.camera.pos.y / 100
     })
     World.SPACE_SHADER:send('iGlobalTime', 0)
-    -- love.graphics.setShader(World.SPACE_SHADER)
-    -- love.graphics.rectangle('fill', 0, 0, love.graphics.getDimensions())
-    -- love.graphics.setShader()
+    love.graphics.setShader(World.SPACE_SHADER)
+    love.graphics.rectangle('fill', 0, 0, love.graphics.getDimensions())
+    love.graphics.setShader()
 
     self.camera:draw(function()
         love.graphics.circle('line', 0, 0, self.radius)

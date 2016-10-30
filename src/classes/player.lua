@@ -1,8 +1,9 @@
 local Class   = require 'modules.hump.class'
 local Signal  = require 'modules.hump.signal'
 local Vector  = require 'modules.hump.vector'
+local Circle  = require 'src.mixins.circle'
 local Movable = require 'src.mixins.movable'
-local Weapon = require 'src.classes.weapon'
+local Weapon  = require 'src.classes.weapon'
 
 local Player = Class {
     RADIUS = 12,
@@ -15,6 +16,7 @@ function Player:init(id, world, level, planet, planets, angle)
     Movable.init(self, world, planets, x, y, Player.RADIUS, true)
 
     self.id = id
+    self.planet = planet
     self.weapon = Weapon(level, self, Const.weapons.pistol)
     self.level = level
     self.points = 0
@@ -28,7 +30,7 @@ function Player:init(id, world, level, planet, planets, angle)
         collide = function(data)
             if data.tag == 'Bit' then
                 data.object.dead = true
-                if data.object.owner and data.object.owner ~= self then
+                if data.object.owner > 0 and data.object.owner ~= self.id then
                     self.dead = true
                 else
                     self.points = self.points + 1
@@ -74,6 +76,7 @@ function Player:draw()
     love.graphics.setColor(Const.colors[self.id]())
     love.graphics.print(self.points, self.pos.x - 4, self.pos.y - 4)
     love.graphics.circle('fill', self.pos.x + 16 * math.cos(self.direction), self.pos.y + 16 * math.sin(self.direction), 4)
+    -- self.planet:draw()
     Movable.draw(self)
     love.graphics.setColor(255, 255, 255)
 end
