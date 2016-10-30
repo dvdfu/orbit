@@ -4,7 +4,11 @@ local Body = require 'src.mixins.body'
 local Moon = require 'src.classes.moon'
 
 local Planet = Class {
-    SPR_GRASS = love.graphics.newImage('res/grass_planet.png')
+    SPRITES = {
+        [1] = love.graphics.newImage('res/water_planet.png'),
+        [2] = love.graphics.newImage('res/brown_planet.png'),
+        [3] = love.graphics.newImage('res/pink_planet.png'),
+    }
 }
 Planet:include(Body)
 
@@ -22,19 +26,23 @@ function Planet:init(world, x, y, radius, hasMoon)
         collide = function(data) end,
         endCollide = function(data) end
     })
+
+    self.sprite = RNG:random(1, 3)
+    self.rotation = RNG:random(0, math.pi * 2)
 end
 
 function Planet:update(dt)
-    if hasMoon then
+    if self.hasMoon then
       self.moon:update(dt)
     end
 end
 
 function Planet:draw(dt)
-    love.graphics.draw(Planet.SPR_GRASS, self.pos.x, self.pos.y, 0, self.radius / 32, self.radius / 32, 32, 32)
-    if hasMoon then
-      self.moon:draw()
-    end
+  -- Body.draw(self)
+  love.graphics.draw(Planet.SPRITES[self.sprite], self.pos.x, self.pos.y, self.rotation, self.radius / 32, self.radius / 32, 32, 32)
+  if self.hasMoon then
+    self.moon:draw()
+  end
 end
 
 return Planet
