@@ -13,6 +13,12 @@ Const.fonts = {
     bodyFont = love.graphics.newFont('res/fonts/babyblue.ttf', 16)
 }
 
+Const.quotes = {
+    [0] = 'asdfasdf',
+    [1] = 'sdafdsf',
+    [2] = '324328'
+}
+
 Const.weapons = {
     pistol = {
         fireRate = 0.25,
