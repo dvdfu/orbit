@@ -24,6 +24,8 @@ Const.quotes = {
     [7] = "Have you ever had a dream?",
     [8] = "Don't drink and drive",
     [9] = "Smile!",
+    [10] = "Team Rocket, blasting off again",
+    [11] = "It's not right, it's not fair"
 }
 
 Const.weapons = {
