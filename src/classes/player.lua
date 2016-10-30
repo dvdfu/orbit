@@ -11,7 +11,7 @@ local Player = Class {
     LAUNCH_FORCE = 300,
     THRUST_FORCE = 200,
     BOOST_FORCE = 250,
-    BOOST_COOLDOWN = 5,
+    BOOST_COOLDOWN = 3,
     SPRITE = love.graphics.newImage('res/rocket.png'),
     SPR_TRAIL = love.graphics.newImage('res/circle.png'),
     SPR_CROWN = love.graphics.newImage('res/crown.png'),
@@ -147,8 +147,9 @@ end
 
 function Player:draw()
     if self.boost == Player.BOOST_COOLDOWN then
-        love.graphics.print("*", self.pos.x, self.pos.y + 10)
+        love.graphics.print("*", self.pos.x, self.pos.y + 15)
     end
+
     love.graphics.setColor(Const.colors[self.id]())
     love.graphics.setBlendMode('add')
     love.graphics.draw(self.trail)
