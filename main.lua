@@ -40,19 +40,17 @@ end
 
 function love.load()
     roundNum = 1
-    Signal.register('new_round', function(players)
+    Signal.register('new_round', function(player)
         roundNum = roundNum + 1
 
-        for _, player in pairs(players) do
-            if wins[player.id] then
-                wins[player.id] = wins[player.id] + 1
-            else
-                wins[player.id] = 1
-            end
+        if wins[player.id] then
+            wins[player.id] = wins[player.id] + 1
+        else
+            wins[player.id] = 1
+        end
 
-            if wins[player.id] == 3 then
-                GameState.switch(over)
-            end
+        if wins[player.id] == 3 then
+            GameState.switch(over)
         end
 
         round = Round(roundNum)

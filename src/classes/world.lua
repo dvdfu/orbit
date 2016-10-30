@@ -183,11 +183,13 @@ function World:update(dt)
                     table.insert(self.objects, debris)
                 end
 
-                table.remove(self.players, object.id)
-                if #self.players <= 1 then
-                    Timer.after(1, function()
-                        Signal.emit('new_round', self.players)
-                    end)
+                if #self.players > 1 then
+                    table.remove(self.players, object.id)
+                    if #self.players <= 1 then
+                        Timer.after(2, function()
+                            Signal.emit('new_round', self.players[1])
+                        end)
+                    end
                 end
             end
             object.body:destroy()

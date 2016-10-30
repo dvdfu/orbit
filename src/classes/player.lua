@@ -58,8 +58,8 @@ function Player:init(id, world, level, planet, planets, angle)
                 data.object.dead = true
             elseif data.tag == 'Sun' then
                 Player.DEATH_SOUND:play()
-                Signal.emit('cam_shake')
                 self.dead = true
+                Signal.emit('cam_shake')
             end
         end,
         endCollide = function(data)
