@@ -14,13 +14,12 @@ function Bit:init(world, planets, owner, x, y)
     self.body:setBullet(true)
 
     self.body:setFixedRotation(true)
-    self.fixture:setRestitution(0.8)
+    self.fixture:setRestitution(0.9)
     self.fixture:setUserData({
         object = self,
         tag = 'Bit',
         collide = function(data)
             if data.tag == 'Planet' then
-                -- Signal.emit('cam_shake')
                 self.owner = 0
             elseif data.tag == 'Asteroid' then
                 data.object.dead = true
@@ -37,7 +36,7 @@ function Bit:init(world, planets, owner, x, y)
     self.trail = love.graphics.newParticleSystem(Bit.SPR_TRAIL)
     self.trail:setParticleLifetime(0.5)
     self.trail:setColors(255, 255, 255, 255, 255, 255, 255, 0)
-    self.trail:setSizes(1, 0)
+    self.trail:setSizes(Bit.RADIUS / 8, 0)
 end
 
 function Bit:update(dt)

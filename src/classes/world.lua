@@ -231,6 +231,11 @@ function World:update(dt)
                 end
             elseif object.fixture:getUserData().tag == 'Player' then
                 table.remove(self.players, object.id)
+                if #self.players == 1 then
+                    Timer.after(1, function()
+                        Signal.emit('restart_level')
+                    end)
+                end
             end
             object.body:destroy()
             table.remove(self.objects, key)
