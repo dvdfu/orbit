@@ -128,7 +128,7 @@ function Player:draw()
     love.graphics.setBlendMode('add')
     love.graphics.draw(self.trail)
     love.graphics.setBlendMode('alpha')
-    love.graphics.print(self.points, self.pos.x - 4, self.pos.y - 4)
+    -- love.graphics.print(self.points, self.pos.x - 4, self.pos.y - 4)
     love.graphics.draw(Player.SPRITE, self.pos.x, self.pos.y, self.direction, 1, 1, 12, 12)
     love.graphics.setColor(255, 255, 255)
 end

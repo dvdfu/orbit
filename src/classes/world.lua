@@ -15,7 +15,7 @@ local World = Class {
     -- Generation Parameters
     PLANET_STARTING_POSITION = { low = -10, high = 10 },
     PLANET_RADIUS = { low = 150, high = 250 },
-    PLANET_RADIUS_SHRINK_FACTOR = 3,
+    PLANET_RADIUS_SHRINK_FACTOR = 3.5,
     SPACE_SHADER = love.graphics.newShader(Const.spaceShader)
 }
 
@@ -84,7 +84,10 @@ function World:generate()
     self:generatePlanets()
 
     for i = 1, 10 do
-        local asteroid = Asteroid(self.physicsWorld, self.planets, self.radius * 2 * math.cos(RNG:random(0, math.pi * 2)), self.radius * 2 * math.sin(RNG:random(0, math.pi * 2)), RNG:random(15, 30))
+        local asteroid = Asteroid(self.physicsWorld, self.planets,
+            RNG:random(1, 2) * self.radius * 2 * math.cos(RNG:random(0, math.pi * 2)),
+            RNG:random(1, 2) * self.radius * 2 * math.sin(RNG:random(0, math.pi * 2)),
+            RNG:random(15, 30))
         table.insert(self.objects, asteroid)
         table.insert(self.asteroids, asteroid)
     end
