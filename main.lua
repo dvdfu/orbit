@@ -1,5 +1,9 @@
 RNG = love.math.newRandomGenerator(love.timer.getTime())
 
+-- love.graphics.setLineStyle('rough')
+-- love.graphics.setDefaultFilter('nearest', 'nearest')
+-- love.graphics.setBackgroundColor(0, 0, 0)
+
 Const = require 'src.const'
 Joysticks = require 'src.joysticks'
 Keyboard = require 'src.keyboard'

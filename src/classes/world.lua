@@ -239,10 +239,10 @@ function World:update(dt)
         end
     end
 
-    self:handleCamera()
+    self:handleCamera(dt)
 end
 
-function World:handleCamera()
+function World:handleCamera(dt)
     self.cameraPre = self.camera.pos
 
     local cameraVec = Vector()
@@ -269,8 +269,8 @@ function World:draw()
         love.graphics.getHeight()
     })
     World.SPACE_SHADER:send('iMouse', {
-        self.camera.pos.x / 100,
-        self.camera.pos.y / 100
+        -self.camera.pos.x / 100,
+        -self.camera.pos.y / 100
     })
     World.SPACE_SHADER:send('iGlobalTime', 0)
     love.graphics.setShader(World.SPACE_SHADER)

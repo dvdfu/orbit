@@ -13,7 +13,7 @@ Const.weapons = {
     },
     machineGun = {
         fireRate = 0.05,
-        bulletSpeed = 100
+        bulletSpeed = 200
     }
 }
 

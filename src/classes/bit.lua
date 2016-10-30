@@ -1,11 +1,11 @@
 local Class = require 'modules.hump.class'
+local Signal = require 'modules.hump.signal'
 local Vector = require 'modules.hump.vector'
 local Movable = require 'src.mixins.movable'
 
 local Bit = Class {
     RADIUS = 8,
-    density = 1,
-    sprTrail = love.graphics.newImage('res/circle.png'),
+    SPR_TRAIL = love.graphics.newImage('res/circle.png'),
 }
 Bit:include(Movable)
 
@@ -20,8 +20,10 @@ function Bit:init(world, planets, owner, x, y)
         tag = 'Bit',
         collide = function(data)
             if data.tag == 'Planet' then
+                -- Signal.emit('cam_shake')
                 self.owner = 0
             elseif data.tag == 'Asteroid' then
+                -- Signal.emit('cam_shake')
                 data.object.dead = true
             elseif data.tag == 'Bit' then
                 self.owner = 0
@@ -33,7 +35,7 @@ function Bit:init(world, planets, owner, x, y)
 
     self.owner = owner and owner.id or 0
 
-    self.trail = love.graphics.newParticleSystem(Bit.sprTrail)
+    self.trail = love.graphics.newParticleSystem(Bit.SPR_TRAIL)
     self.trail:setParticleLifetime(0.4)
     self.trail:setSizes(1, 0)
 end
