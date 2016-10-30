@@ -4,6 +4,7 @@ local Vector  = require 'modules.hump.vector'
 local Circle  = require 'src.mixins.circle'
 local Movable = require 'src.mixins.movable'
 local Weapon  = require 'src.classes.weapon'
+local Timer = require 'modules.hump.timer'
 
 local Player = Class {
     RADIUS = 12,
@@ -32,6 +33,7 @@ function Player:init(id, world, level, planet, planets, angle)
     self.points = 0
     self.direction = 0
     self.boost = 5;
+    self.invincible = false;
 
     self.body:setLinearDamping(4)
 
@@ -51,6 +53,8 @@ function Player:init(id, world, level, planet, planets, angle)
                 end
             elseif data.tag == 'Planet' then
                 self.groundPlanet = data.object
+            elseif data.tag == 'Player' and invincible then
+                data.object.dead = true
             elseif data.tag == 'Sun' then
                 Player.DEATH_SOUND:play()
                 Signal.emit('cam_shake')
@@ -85,6 +89,8 @@ function Player:update(dt)
     else
         self.boost = Player.BOOST_COOLDOWN
     end
+
+    local velX, velY = self.body:getLinearVelocity();
 
     local ls = Vector(self.joystick:getGamepadAxis('leftx'), self.joystick:getGamepadAxis('lefty'))
     if ls:len() > 0.25 then
@@ -135,10 +141,14 @@ function Player:update(dt)
     end
 
     if self.joystick:isGamepadDown('rightshoulder') and self.boost == Player.BOOST_COOLDOWN then
+        self.invincible = true;
         self.boost = 0;
         self.trail:setPosition((self.pos - Vector(12, 0):rotated(self.direction)):unpack())
         self.trail:emit(1)
         self.body:applyLinearImpulse(Player.BOOST_FORCE * math.cos(self.direction), Player.BOOST_FORCE * math.sin(self.direction))
+        Timer.after(.4, function()
+            self.invincible = false;
+        end)
     end
 
     Movable.update(self, dt)
@@ -148,6 +158,11 @@ end
 function Player:draw()
     if self.boost == Player.BOOST_COOLDOWN then
         love.graphics.print("*", self.pos.x, self.pos.y + 15)
+    end
+
+    if self.invincible then
+        love.graphics.setColor(Const.colors[self.id]())
+        love.graphics.circle('line', self.pos.x, self.pos.y, Player.RADIUS + 6)
     end
 
     love.graphics.setColor(Const.colors[self.id]())
