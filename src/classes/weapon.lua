@@ -31,7 +31,9 @@ function Weapon:shoot()
 
         self.player.points = self.player.points - 1
         self.fireTimer = self.fireRate
+        return true
     end
+    return false
 end
 
 return Weapon

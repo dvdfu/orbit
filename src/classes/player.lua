@@ -1,7 +1,6 @@
 local Class   = require 'modules.hump.class'
 local Signal  = require 'modules.hump.signal'
 local Vector  = require 'modules.hump.vector'
-local Body    = require 'src.mixins.body'
 local Movable = require 'src.mixins.movable'
 local Weapon = require 'src.classes.weapon'
 
@@ -9,17 +8,16 @@ local Player = Class {
     RADIUS = 12,
     MOVE_FORCE = 400
 }
-Player:include(Body)
+Player:include(Movable)
 
-function Player:init(id, world, level, planet, angle)
+function Player:init(id, world, level, planet, planets, angle)
     local x, y = (planet.pos + (planet.radius + Player.RADIUS) * Vector(1, 0):rotated(angle)):unpack()
-    Body.init(self, world, x, y, Player.RADIUS, true)
+    Movable.init(self, world, planets, x, y, Player.RADIUS, true)
 
     self.id = id
     self.weapon = Weapon(level, self, Const.weapons.pistol)
     self.level = level
-    self.planet = planet
-    self.points = 100
+    self.points = 0
     self.direction = 0
 
     self.body:setLinearDamping(4)
@@ -40,10 +38,6 @@ function Player:init(id, world, level, planet, angle)
 end
 
 function Player:update(dt)
-    local direction = (self.planet.pos - self.pos):normalized()
-    local magnitude = Movable.G * self:getArea() * self.planet:getArea() / self:getSquaredLengthTo(self.planet.pos)
-    self.body:applyForce((direction * magnitude):unpack())
-
     local ls = Vector(self.joystick:getGamepadAxis('leftx'), self.joystick:getGamepadAxis('lefty'))
     if ls:len() > 0.25 then
         self.body:applyForce((ls:normalized() * Player.MOVE_FORCE):unpack())
@@ -56,7 +50,9 @@ function Player:update(dt)
 
     self.weapon:update(dt)
     if self.joystick:isGamepadDown('rightshoulder') then
-        self.weapon:shoot()
+        if self.weapon:shoot() then
+            self.body:applyLinearImpulse(Vector(50, 0):rotated(self.direction + math.pi):unpack())
+        end
     end
 
     if self.joystick:isGamepadDown('y') then
@@ -67,14 +63,14 @@ function Player:update(dt)
         end
     end
 
-    Body.update(self, dt)
+    Movable.update(self, dt)
 end
 
 function Player:draw()
     love.graphics.setColor(Const.colors[self.id]())
     love.graphics.print(self.points, self.pos.x - 4, self.pos.y - 4)
     love.graphics.circle('fill', self.pos.x + 16 * math.cos(self.direction), self.pos.y + 16 * math.sin(self.direction), 4)
-    Body.draw(self)
+    Movable.draw(self)
     love.graphics.setColor(255, 255, 255)
 end
 

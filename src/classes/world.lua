@@ -201,7 +201,7 @@ function World:generatePlanets()
         end
 
 
-        local player = Player(i, self.physicsWorld, self, planet, RNG:random(2 * math.pi))
+        local player = Player(i, self.physicsWorld, self, planet, self.planets, RNG:random(2 * math.pi))
         table.insert(self.objects, player)
         table.insert(self.players, player)
     end
