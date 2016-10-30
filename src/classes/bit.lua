@@ -23,7 +23,6 @@ function Bit:init(world, planets, owner, x, y)
                 -- Signal.emit('cam_shake')
                 self.owner = 0
             elseif data.tag == 'Asteroid' then
-                -- Signal.emit('cam_shake')
                 data.object.dead = true
             elseif data.tag == 'Bit' then
                 self.owner = 0
@@ -36,7 +35,8 @@ function Bit:init(world, planets, owner, x, y)
     self.owner = owner and owner.id or 0
 
     self.trail = love.graphics.newParticleSystem(Bit.SPR_TRAIL)
-    self.trail:setParticleLifetime(0.4)
+    self.trail:setParticleLifetime(0.5)
+    self.trail:setColors(255, 255, 255, 255, 255, 255, 255, 0)
     self.trail:setSizes(1, 0)
 end
 
@@ -49,16 +49,11 @@ function Bit:update(dt)
 end
 
 function Bit:draw()
-    if self.owner > 0 then
-        love.graphics.setColor(Const.colors[self.owner]())
-        Movable.draw(self)
-        love.graphics.draw(self.trail)
-        love.graphics.setColor(255, 255, 255)
-    else
-        Movable.draw(self)
-        love.graphics.draw(self.trail)
-    end
-
+    love.graphics.setBlendMode('add')
+    love.graphics.setColor(Const.colors[self.owner]())
+    love.graphics.draw(self.trail)
+    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.setBlendMode('alpha')
 end
 
 return Bit

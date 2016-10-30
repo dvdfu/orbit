@@ -7,7 +7,11 @@ local Weapon  = require 'src.classes.weapon'
 
 local Player = Class {
     RADIUS = 12,
-    MOVE_FORCE = 400
+    MOVE_FORCE = 4,
+    LAUNCH_FORCE = 200,
+    THRUST_FORCE = 200,
+    SPRITE = love.graphics.newImage('res/rocket.png'),
+    SPR_TRAIL = love.graphics.newImage('res/circle.png')
 }
 Player:include(Movable)
 
@@ -32,6 +36,7 @@ function Player:init(id, world, level, planet, planets, angle)
             if data.tag == 'Bit' then
                 data.object.dead = true
                 if data.object.owner > 0 and data.object.owner ~= self.id then
+                    Signal.emit('cam_shake')
                     self.dead = true
                 else
                     self.points = self.points + 1
@@ -47,14 +52,26 @@ function Player:init(id, world, level, planet, planets, angle)
         end
     })
 
+    self.trail = love.graphics.newParticleSystem(Player.SPR_TRAIL)
+    self.trail:setParticleLifetime(0.5, 1)
+    self.trail:setColors(255, 255, 255, 255, 32, 32, 32, 255)
+    self.trail:setSpread(math.pi * 2)
+    self.trail:setSizes(0.8, 0)
+    self.trail:setSpeed(0, 30)
+
     self.joystick = love.joystick.getJoysticks()[id]
 end
 
 function Player:update(dt)
+    if self.groundPlanet then
+        local pp = (self.pos - self.groundPlanet.pos):normalized()
+        self.direction = pp:angleTo()
+    end
+
     local ls = Vector(self.joystick:getGamepadAxis('leftx'), self.joystick:getGamepadAxis('lefty'))
     if ls:len() > 0.25 then
-        if self.groundPlanet ~= nil then
-            local pp = Vector(self.pos.x - self.groundPlanet.pos.x, self.pos.y - self.groundPlanet.pos.y):normalized()
+        if self.groundPlanet then
+            local pp = (self.pos - self.groundPlanet.pos):normalized()
             local angle = pp:angleTo(ls)
             if angle < 0 then angle = angle + math.pi * 2 end
 
@@ -62,26 +79,33 @@ function Player:update(dt)
                 if angle < math.pi then
                     pp = -pp
                 end
-
-                self.body:applyLinearImpulse((pp:perpendicular():normalized() * 10):unpack())
+                self.body:applyLinearImpulse((pp:perpendicular():normalized() * Player.MOVE_FORCE):unpack())
             else
-                self.body:applyLinearImpulse((ls:normalized() * 10):unpack())
+                self.body:applyLinearImpulse((ls:normalized() * Player.MOVE_FORCE):unpack())
             end
         else
-            self.body:applyLinearImpulse((ls:normalized() * 10):unpack())
+            self.direction = math.atan2(ls.y, ls.x)
+            self.body:applyLinearImpulse((ls:normalized() * Player.MOVE_FORCE):unpack())
         end
-    end
-
-    local rs = Vector(self.joystick:getGamepadAxis('righty'), self.joystick:getGamepadAxis('rightx'))
-    if rs:len() > 0.25 then
-        self.direction = math.atan2(rs:unpack())
     end
 
     self.weapon:update(dt)
-    if self.joystick:isGamepadDown('rightshoulder') then
-        if self.weapon:shoot() then
-            self.body:applyLinearImpulse(Vector(50, 0):rotated(self.direction + math.pi):unpack())
+
+    if self.joystick:getGamepadAxis('triggerleft') > 0.2 then
+        self.trail:setPosition((self.pos - Vector(12, 0):rotated(self.direction)):unpack())
+        if self.groundPlanet then
+            local pp = (self.pos - self.groundPlanet.pos):normalized()
+            self.body:applyLinearImpulse((pp * Player.LAUNCH_FORCE):unpack())
+            self.groundPlanet =
+            self.trail:emit(32)
+        else
+            self.trail:emit(1)
+            self.body:applyForce(Player.THRUST_FORCE * math.cos(self.direction), Player.THRUST_FORCE * math.sin(self.direction))
         end
+    end
+
+    if self.joystick:getGamepadAxis('triggerright') > 0.2 then
+        self.weapon:shoot()
     end
 
     if self.joystick:isGamepadDown('y') then
@@ -93,14 +117,16 @@ function Player:update(dt)
     end
 
     Movable.update(self, dt)
+    self.trail:update(dt)
 end
 
 function Player:draw()
     love.graphics.setColor(Const.colors[self.id]())
+    love.graphics.setBlendMode('add')
+    love.graphics.draw(self.trail)
+    love.graphics.setBlendMode('alpha')
     love.graphics.print(self.points, self.pos.x - 4, self.pos.y - 4)
-    love.graphics.circle('fill', self.pos.x + 16 * math.cos(self.direction), self.pos.y + 16 * math.sin(self.direction), 4)
-    -- self.planet:draw()
-    Movable.draw(self)
+    love.graphics.draw(Player.SPRITE, self.pos.x, self.pos.y, self.direction, 1, 1, 12, 12)
     love.graphics.setColor(255, 255, 255)
 end
 

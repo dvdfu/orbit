@@ -273,9 +273,9 @@ function World:draw()
         -self.camera.pos.y / 100
     })
     World.SPACE_SHADER:send('iGlobalTime', 0)
-    love.graphics.setShader(World.SPACE_SHADER)
-    love.graphics.rectangle('fill', 0, 0, love.graphics.getDimensions())
-    love.graphics.setShader()
+    -- love.graphics.setShader(World.SPACE_SHADER)
+    -- love.graphics.rectangle('fill', 0, 0, love.graphics.getDimensions())
+    -- love.graphics.setShader()
 
     self.camera:draw(function()
         love.graphics.circle('line', 0, 0, self.radius)

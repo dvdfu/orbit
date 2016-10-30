@@ -1,9 +1,11 @@
 local Const = {}
 
 Const.colors = {
-    [1] = function() return 255, 0, 0 end,
-    [2] = function() return 0, 255, 0 end,
-    [3] = function() return 0, 0, 255 end,
+    [0] = function() return 255, 255, 255, 255 end,
+    [1] = function() return 255, 128, 32, 255 end,
+    [2] = function() return 128, 255, 32, 255 end,
+    [3] = function() return 32, 128, 255, 255 end,
+    [4] = function() return 255, 255, 128, 255 end,
 }
 
 Const.weapons = {
