@@ -10,6 +10,8 @@ local Player = Class {
     MOVE_FORCE = 4,
     LAUNCH_FORCE = 300,
     THRUST_FORCE = 200,
+    BOOST_FORCE = 250,
+    BOOST_COOLDOWN = 5,
     SPRITE = love.graphics.newImage('res/rocket.png'),
     SPR_TRAIL = love.graphics.newImage('res/circle.png'),
     DEATH_SOUND = love.audio.newSource("sfx/player_explode.wav", "static"),
@@ -28,6 +30,7 @@ function Player:init(id, world, level, planet, planets, angle)
     self.level = level
     self.points = 0
     self.direction = 0
+    self.boost = 5;
 
     self.body:setLinearDamping(4)
 
@@ -74,6 +77,12 @@ function Player:update(dt)
     if self.groundPlanet then
         local pp = (self.pos - self.groundPlanet.pos):normalized()
         self.direction = pp:angleTo()
+    end
+
+    if self.boost < Player.BOOST_COOLDOWN then
+        self.boost = self.boost + dt
+    else
+        self.boost = Player.BOOST_COOLDOWN
     end
 
     local ls = Vector(self.joystick:getGamepadAxis('leftx'), self.joystick:getGamepadAxis('lefty'))
@@ -124,11 +133,19 @@ function Player:update(dt)
         end
     end
 
+    if self.joystick:isGamepadDown('rightshoulder') and self.boost == Player.BOOST_COOLDOWN then
+        self.boost = 0;
+        self.trail:setPosition((self.pos - Vector(12, 0):rotated(self.direction)):unpack())
+        self.trail:emit(1)
+        self.body:applyLinearImpulse(Player.BOOST_FORCE * math.cos(self.direction), Player.BOOST_FORCE * math.sin(self.direction))
+    end
+
     Movable.update(self, dt)
     self.trail:update(dt)
 end
 
 function Player:draw()
+    love.graphics.print(self.boost, self.pos.x, self.pos.y - 16)
     love.graphics.setColor(Const.colors[self.id]())
     love.graphics.setBlendMode('add')
     love.graphics.draw(self.trail)
