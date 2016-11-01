@@ -9,7 +9,7 @@ local Station = Class {
 Station:include(Body)
 
 function Station:init(world, planet, x, y, radius)
-    Body.init(self, world, x, y, Block.LENGTH*n)
+    Body.init(self, world, x, y, radius)
     self.planet = planet
     self.blocks = {}
     self.radius = radius;
@@ -27,8 +27,8 @@ function Station:init(world, planet, x, y, radius)
 
     local x = 0
     local y = 0
-    for i=1, (radius)^2/Block.LENGTH do
-        blocks[i] = Block(world)
+    for i=1, (radius*radius)/Block.LENGTH do
+        self.blocks[i] = Block(world,x,y)
         x = x + 1;
         if i%radius == 0 then
             y = y + 1;
@@ -39,7 +39,14 @@ end
 
 function Station:update(dt)
   Body.update(self, dt)
-  rotate(dt)
+  self.angle = self.angle + dt/2 * self.speed;
+  if self.angle >= 2*math.pi then
+    self.angle = self.angle - 0;
+  end
+  self.body:setPosition(
+      (self.radius+self.planet.radius + 50)*math.cos(self.angle) + self.planet.pos.x
+    , (self.radius+self.planet.radius + 30)*math.sin(self.angle) + self.planet.pos.y)
+
   for _, v in pairs(self.blocks) do
       v:update(dt)
   end
@@ -51,13 +58,4 @@ function Station:draw()
     end
 end
 
-function rotate(dt)
-    self.angle = self.angle + dt/2 * self.speed;
-    if self.angle >= 2*math.pi then
-      self.angle = self.angle - 0;
-    end
-    self.body:setPosition(
-        (self.radius+self.planet.radius + 50)*math.cos(self.angle) + self.planet.pos.x
-      , (self.radius+self.planet.radius + 30)*math.sin(self.angle) + self.planet.pos.y)
-end
 return Station

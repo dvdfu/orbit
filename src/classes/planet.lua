@@ -13,11 +13,11 @@ local Planet = Class {
 }
 Planet:include(Body)
 
-function Planet:init(world, x, y, radius, hasMoon)
+function Planet:init(world, x, y, radius, hasStation)
     Body.init(self, world, x, y, radius)
-    self.hasMoon = hasMoon
-    if hasMoon then
-      self.moon = Moon(world, self, x - radius*2, y, RNG:random(20, 40))
+    self.hasStation = hasStation
+    if hasStation then
+      self.station = Station(world, self, x - radius, y, 48)
     end
     self.fixture:setFriction(1)
 
@@ -33,8 +33,8 @@ function Planet:init(world, x, y, radius, hasMoon)
 end
 
 function Planet:update(dt)
-    if self.hasMoon then
-      self.moon:update(dt)
+    if self.hasStation then
+      self.station:update(dt)
     end
 end
 
@@ -42,8 +42,8 @@ function Planet:draw(dt)
     love.graphics.setShader(Planet.SHADER)
     love.graphics.draw(Planet.SPRITES[self.sprite], self.pos.x, self.pos.y, 0, self.radius / 32, self.radius / 32, 32, 32)
     love.graphics.setShader()
-    if self.hasMoon then
-      self.moon:draw()
+    if self.hasStation then
+      self.station:draw()
     end
 end
 
