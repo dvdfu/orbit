@@ -1,7 +1,7 @@
 local Class = require 'modules.hump.class'
 local Vector = require 'modules.hump.vector'
 local Body = require 'src.mixins.body'
-local Moon = require 'src.classes.moon'
+local Station = require 'src.classes.Station.station'
 
 local Planet = Class {
     SPRITES = {

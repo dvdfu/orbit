@@ -12,29 +12,23 @@ Planet:include(Body)
 function Block:init(world, x, y, n)
     Body.init(self, world, x, y, SIZE, SIZE)
     self.on = false
-    -- self.fixture:setUserData({
-    --     object = self,
-    --     tag = 'Block',
-    --     collide = function(data) end,
-    --     --     if data.tag == 'Player' then
-    --     --         self.on = true
-    --     --     end
-    --     -- end,
-    --     endCollide = function(data) end
-    --         -- if data.tag == 'Player' then
-    --         --     self.on = false
-    --         -- end
-    --     -- end
-    -- })
-    self.fixture:setUserData({
-        object = self,
-        tag = 'Moon',
-        collide = function(data) end,
-        endCollide = function(data) end
-    })
 end
 
 function Block:update(dt)
+    self.fixture:setUserData({
+        object = self,
+        tag = 'Block'
+        collide = function(data)
+            if data.tag == 'Player' then
+                self.on = true
+            end
+        end,
+        endCollide = function(data)
+            if data.tag == 'Player' then
+                self.on = false
+            end
+        end
+    })
     if self.on then
         self.particles:setPosition(self.pos:unpack())
         self.particles:emit(5)
