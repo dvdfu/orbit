@@ -7,7 +7,7 @@ local Block = Class {
     SHADER = love.graphics.newShader(Const.gradientShader),
     LENGTH = 16
 }
-Planet:include(Body)
+Block:include(Body)
 
 function Block:init(world, x, y, n)
     Body.init(self, world, x, y, SIZE, SIZE)
@@ -17,7 +17,7 @@ end
 function Block:update(dt)
     self.fixture:setUserData({
         object = self,
-        tag = 'Block'
+        tag = 'Block',
         collide = function(data)
             if data.tag == 'Player' then
                 self.on = true
