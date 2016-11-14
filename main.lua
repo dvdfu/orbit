@@ -51,21 +51,22 @@ function love.load()
             wins[player.id] = 1
         end
 
-        if wins[player.id] == 3 then
-            GameState.switch(over)
-        end
-
         if wins[player.id] > maxWins then
             maxWins = wins[player.id]
             maxPlayer = player.id
         end
 
-        if maxPlayer then
-            round = Round(roundNum, maxPlayer)
+        if wins[player.id] == 3 then
+            GameState.switch(over)
         else
-            round = Round(roundNum)
+            if maxPlayer then
+                round = Round(roundNum, maxPlayer)
+            else
+                round = Round(roundNum)
+            end
         end
     end)
+
     Joysticks.init()
     GameState.registerEvents()
     GameState.switch(menu)
@@ -98,7 +99,8 @@ function menu:draw()
 end
 
 function game:enter(from)
-    self.from = from;
+    wins = {}
+    self.from = from
 end
 
 function game:update(dt)
@@ -144,7 +146,7 @@ function pause:draw()
 end
 
 function over:enter(from)
-    self.from = from;
+    self.from = from
 end
 
 function over:keypressed(key, code)
@@ -167,7 +169,7 @@ function over:draw()
         end
     end
 
-    drawCenteredTextAtHeight('Game over', 10)
+    drawCenteredTextAtHeight('Game Over', love.graphics.getHeight() / 2 - 32)
 
     local r, g, b, a = Const.colors[winner]()
     love.graphics.setColor(r, g, b, a)

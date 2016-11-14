@@ -76,6 +76,7 @@ function World:init(isMenu)
     self.camera = Camera(8)
     self.planets = {}
     self.players = {}
+    self.numPlayers = 0;
     self.objects = {}
     self.asteroids = {}
 
@@ -88,6 +89,7 @@ function World:generate(isMenu)
         joysticks = 0
     else
         joysticks = love.joystick.getJoystickCount()
+        self.numPlayers = joysticks
     end
 
     local fakePlanets = {}
@@ -183,13 +185,23 @@ function World:update(dt)
                     table.insert(self.objects, debris)
                 end
 
-                if #self.players > 1 then
+                Player.DEATH_SOUND:play()
+                Signal.emit('cam_shake')
+
+                if self.numPlayers > 1 then
                     table.remove(self.players, object.id)
-                    if #self.players <= 1 then
-                        Timer.after(2, function()
-                            Signal.emit('new_round', self.players[1])
-                        end)
+                    self.numPlayers = self.numPlayers - 1
+                end
+                if self.numPlayers == 1 then
+                    self.winPlayer = nil
+                    for _, player in pairs(self.players) do
+                        self.winPlayer = player
+                        break
                     end
+                    assert(self.winPlayer)
+                    Timer.after(2, function()
+                        Signal.emit('new_round', self.winPlayer)
+                    end)
                 end
             end
             object.body:destroy()
@@ -215,8 +227,8 @@ function World:handleCamera(dt)
         end
     end
 
-    if #self.players > 0 then
-        cameraVec = cameraVec / #self.players
+    if self.numPlayers > 0 then
+        cameraVec = cameraVec / self.numPlayers
     else
         cameraVec = Vector()
     end

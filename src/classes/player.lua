@@ -45,8 +45,6 @@ function Player:init(id, world, level, planet, planets, angle)
             if data.tag == 'Bit' then
                 data.object.dead = true
                 if data.object.owner > 0 and data.object.owner ~= self.id then
-                    Player.DEATH_SOUND:play()
-                    Signal.emit('cam_shake')
                     self.dead = true
                 else
                     Player.PICKUP_BIT_SOUND:play()
@@ -57,9 +55,7 @@ function Player:init(id, world, level, planet, planets, angle)
             elseif data.tag == 'Player' and self.invincible then
                 data.object.dead = true
             elseif data.tag == 'Sun' then
-                Player.DEATH_SOUND:play()
                 self.dead = true
-                Signal.emit('cam_shake')
             end
         end,
         endCollide = function(data)
