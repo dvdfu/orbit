@@ -14,19 +14,29 @@ Const.fonts = {
 }
 
 Const.quotes = {
-    [0] = "Rocket fuel can't melt steel games",
-    [1] = "It's a small world",
-    [2] = "It's only game.",
-    [3] = "Breaking friendships since 1995",
-    [4] = "Brrap brrap pew pew",
-    [5] = "In the end, the sun will kill us all",
-    [6] = "It's just like in real life",
-    [7] = "Have you ever had a dream?",
-    [8] = "Don't drink and drive",
-    [9] = "Smile!",
-    [10] = "Team Rocket, blasting off again",
-    [11] = "It's not right, it's not fair",
-    [12] = "You can be unethical, or be a cool cat"
+    [0] = "Still working on CS 348 Assignment 2",
+    [1] = "It's only game.",
+    [2] = "Pray to the Bell Curve Gods",
+    [3] = "Automagically Schmilblick",
+    [4] = "Will this be on the final?",
+    [5] = "Please give us an A+",
+    [6] = "Executing time logging script...",
+    [7] = "Please clap",
+    [8] = "Moment of silence for the USA",
+    [9] = "Moment of silence for SE 380",
+    -- [0] = "Rocket fuel can't melt steel games",
+    -- [1] = "It's a small world",
+    -- [2] = "It's only game.",
+    -- [3] = "Breaking friendships since 1995",
+    -- [4] = "Brrap brrap pew pew",
+    -- [5] = "In the end, the sun will kill us all",
+    -- [6] = "It's just like in real life",
+    -- [7] = "Have you ever had a dream?",
+    -- [8] = "Don't drink and drive",
+    -- [9] = "Smile!",
+    -- [10] = "Team Rocket, blasting off again",
+    -- [11] = "It's not right, it's not fair",
+    -- [12] = "You can be unethical, or be a cool cat"
 }
 
 Const.weapons = {

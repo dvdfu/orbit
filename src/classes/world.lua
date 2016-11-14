@@ -193,6 +193,7 @@ function World:update(dt)
                     self.numPlayers = self.numPlayers - 1
                 end
                 if self.numPlayers == 1 then
+                    self.numPlayers = self.numPlayers - 1
                     self.winPlayer = nil
                     for _, player in pairs(self.players) do
                         self.winPlayer = player

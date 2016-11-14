@@ -169,7 +169,7 @@ function over:draw()
         end
     end
 
-    drawCenteredTextAtHeight('Game Over', love.graphics.getHeight() / 2 - 32)
+    drawCenteredTextAtHeight('Game Over', love.graphics.getHeight() / 2 - 40)
 
     local r, g, b, a = Const.colors[winner]()
     love.graphics.setColor(r, g, b, a)
